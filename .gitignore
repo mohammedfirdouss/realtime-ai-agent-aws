@@ -25,6 +25,7 @@ cdk.out/
 htmlcov/
 .coverage
 coverage.xml
+.hypothesis/
 
 # OS
 .DS_Store

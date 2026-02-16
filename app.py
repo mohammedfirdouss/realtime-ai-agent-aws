@@ -4,6 +4,7 @@
 import aws_cdk as cdk
 
 from infra.config import get_environment_config
+from infra.database_stack import DatabaseStack
 from infra.foundation_stack import FoundationStack
 
 app = cdk.App()
@@ -16,12 +17,21 @@ env = cdk.Environment(
     region=config.aws_region,
 )
 
-FoundationStack(
+foundation = FoundationStack(
     app,
     f"RealtimeAgenticApi-Foundation-{config.stage}",
     config=config,
     env=env,
     description=f"Realtime Agentic API foundation infrastructure ({config.stage})",
 )
+
+database = DatabaseStack(
+    app,
+    f"RealtimeAgenticApi-Database-{config.stage}",
+    config=config,
+    env=env,
+    description=f"Realtime Agentic API DynamoDB tables ({config.stage})",
+)
+database.add_dependency(foundation)
 
 app.synth()
