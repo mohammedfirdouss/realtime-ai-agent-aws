@@ -40,8 +40,7 @@ class RuntimeConfig:
 
 def load_runtime_config() -> RuntimeConfig:
     """Build RuntimeConfig from environment variables set by CDK."""
-    cache_port_str = os.environ.get("CACHE_PORT", "6379")
-    cache_port = int(cache_port_str) if cache_port_str else 6379
+    cache_port = int(os.environ.get("CACHE_PORT", "6379"))
 
     return RuntimeConfig(
         stage=os.environ.get("STAGE", "dev"),

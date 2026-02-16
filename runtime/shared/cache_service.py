@@ -35,6 +35,7 @@ class CacheConfig:
     socket_connect_timeout: float = 1.0
     decode_responses: bool = True
     max_connections: int = 10
+    local_cache_max_size: int = 1000
 
 
 class LocalLRUCache:
@@ -100,12 +101,19 @@ class CacheService:
     """
 
     config: CacheConfig | None = None
+    local_cache_max_size: int = 1000
     _client: Any = field(default=None, init=False, repr=False)
-    _local_cache: LocalLRUCache = field(default_factory=LocalLRUCache, init=False)
+    _local_cache: LocalLRUCache = field(init=False)
     _use_local_only: bool = field(default=False, init=False)
 
     def __post_init__(self) -> None:
         """Initialize Redis client if config is provided."""
+        # Determine local cache size from config or use provided default
+        max_size = self.local_cache_max_size
+        if self.config is not None:
+            max_size = self.config.local_cache_max_size
+        self._local_cache = LocalLRUCache(max_size=max_size)
+
         if self.config is not None:
             self._connect()
         else:
@@ -201,20 +209,20 @@ class CacheService:
     def delete(self, key: str) -> bool:
         """Delete a key from the cache.
 
-        Returns True if the key was deleted.
+        Returns True if the key was deleted from either local or Redis cache.
         """
         # Always delete from local cache
-        self._local_cache.delete(key)
+        local_deleted = self._local_cache.delete(key)
 
         if self._use_local_only or self._client is None:
-            return True
+            return local_deleted
 
         try:
             result = self._client.delete(key)
-            return bool(result > 0)
+            return bool(result > 0) or local_deleted
         except Exception as exc:
             logger.warning("Cache delete failed for key %s: %s", key, exc)
-            return False
+            return local_deleted
 
     def exists(self, key: str) -> bool:
         """Check if a key exists in the cache."""

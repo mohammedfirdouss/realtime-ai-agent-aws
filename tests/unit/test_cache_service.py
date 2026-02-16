@@ -114,6 +114,10 @@ class TestCacheServiceLocalOnly:
         assert service.delete("key1") is True
         assert service.get("key1") is None
 
+    def test_delete_nonexistent_key_local_only(self) -> None:
+        service = CacheService(config=None)
+        assert service.delete("nonexistent") is False
+
     def test_exists_local_only(self) -> None:
         service = CacheService(config=None)
         service.set("key1", "value1")
