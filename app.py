@@ -6,6 +6,7 @@ import aws_cdk as cdk
 from infra.cache_stack import CacheStack
 from infra.config import get_environment_config
 from infra.database_stack import DatabaseStack
+from infra.events_stack import EventsStack
 from infra.foundation_stack import FoundationStack
 
 app = cdk.App()
@@ -35,15 +36,13 @@ database = DatabaseStack(
 )
 database.add_dependency(foundation)
 
-cache = CacheStack(
+events = EventsStack(
     app,
-    f"RealtimeAgenticApi-Cache-{config.stage}",
+    f"RealtimeAgenticApi-Events-{config.stage}",
     config=config,
-    vpc=foundation.vpc,
-    cache_security_group=foundation.cache_sg,
     env=env,
-    description=f"Realtime Agentic API ElastiCache Redis ({config.stage})",
+    description=f"Realtime Agentic API EventBridge resources ({config.stage})",
 )
-cache.add_dependency(foundation)
+events.add_dependency(foundation)
 
 app.synth()
