@@ -3,6 +3,7 @@
 
 import aws_cdk as cdk
 
+from infra.cache_stack import CacheStack
 from infra.config import get_environment_config
 from infra.database_stack import DatabaseStack
 from infra.events_stack import EventsStack
