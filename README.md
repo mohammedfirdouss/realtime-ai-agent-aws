@@ -1,14 +1,61 @@
-## Building a Realtime Agentic API with AWS CDK, AWS Lambda, AWS Stepfunctions, AWS Evenbridge, Strands Agent
+## Building a Realtime Agentic API with AWS CDK, AWS Lambda, AWS Stepfunctions, AWS EventBridge, Strands Agent
 
-
+A serverless, event-driven platform for deploying and managing AI agents. Built with Python, AWS CDK, Lambda, Step Functions, EventBridge, and DynamoDB.
 
 ## Prerequisites
 
-- AWS CLI 
-- AWS CDK
-- AWS Bedrock 
-- Docker
-- Typescript
-- AWS Strands
 - Python >= 3.11
+- AWS CLI (configured)
+- AWS CDK CLI (`npm install -g aws-cdk`)
+- Docker (for bundling Lambda layers)
+
+## Quick Start
+
+```bash
+# Create virtual environment and install dependencies
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+pip install -e .
+
+# Run tests
+pytest tests/ -v
+
+# Lint
+ruff check .
+
+# Synthesize CloudFormation (dev environment)
+cdk synth -c env=dev
+
+# Deploy (dev environment)
+cdk deploy -c env=dev
+```
+
+## Project Structure
+
+```
+.
+├── app.py                    # CDK app entry point
+├── cdk.json                  # CDK configuration
+├── infra/                    # CDK infrastructure definitions
+│   ├── config.py             # Environment configuration & constants
+│   └── foundation_stack.py   # Base stack (VPC, networking, secrets)
+├── runtime/                  # Lambda function code
+│   └── shared/               # Shared utilities across Lambdas
+│       ├── config.py          # Runtime env-var configuration
+│       ├── constants.py       # Shared constants (events, statuses, etc.)
+│       └── secrets.py         # Secrets Manager helper with caching
+├── tests/                    # Test suite
+│   ├── unit/                 # Unit tests
+│   └── property/             # Property-based tests (Hypothesis)
+└── specs/                    # Design & requirements docs
+```
+
+## Environments
+
+| Environment | NAT Gateways | AZs | Notes |
+|-------------|-------------|-----|-------|
+| dev         | 0           | 2   | Isolated subnets, secrets auto-deleted |
+| staging     | 1           | 2   | Private subnets with egress, VPC flow logs |
+| prod        | 2           | 3   | Full HA, secrets retained on delete |
 
