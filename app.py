@@ -5,6 +5,7 @@ import aws_cdk as cdk
 
 from infra.config import get_environment_config
 from infra.database_stack import DatabaseStack
+from infra.events_stack import EventsStack
 from infra.foundation_stack import FoundationStack
 
 app = cdk.App()
@@ -33,5 +34,14 @@ database = DatabaseStack(
     description=f"Realtime Agentic API DynamoDB tables ({config.stage})",
 )
 database.add_dependency(foundation)
+
+events = EventsStack(
+    app,
+    f"RealtimeAgenticApi-Events-{config.stage}",
+    config=config,
+    env=env,
+    description=f"Realtime Agentic API EventBridge resources ({config.stage})",
+)
+events.add_dependency(foundation)
 
 app.synth()
