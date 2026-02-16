@@ -3,6 +3,7 @@
 
 import aws_cdk as cdk
 
+from infra.cache_stack import CacheStack
 from infra.config import get_environment_config
 from infra.database_stack import DatabaseStack
 from infra.foundation_stack import FoundationStack
@@ -33,5 +34,16 @@ database = DatabaseStack(
     description=f"Realtime Agentic API DynamoDB tables ({config.stage})",
 )
 database.add_dependency(foundation)
+
+cache = CacheStack(
+    app,
+    f"RealtimeAgenticApi-Cache-{config.stage}",
+    config=config,
+    vpc=foundation.vpc,
+    cache_security_group=foundation.cache_sg,
+    env=env,
+    description=f"Realtime Agentic API ElastiCache Redis ({config.stage})",
+)
+cache.add_dependency(foundation)
 
 app.synth()

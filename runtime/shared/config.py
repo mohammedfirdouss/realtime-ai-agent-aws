@@ -29,6 +29,10 @@ class RuntimeConfig:
     # Secrets Manager
     secrets_prefix: str
 
+    # Cache (ElastiCache Redis)
+    cache_endpoint: str | None = None
+    cache_port: int = 6379
+
     # Optional overrides (useful for local testing)
     dynamodb_endpoint: str | None = None
     eventbridge_endpoint: str | None = None
@@ -36,6 +40,8 @@ class RuntimeConfig:
 
 def load_runtime_config() -> RuntimeConfig:
     """Build RuntimeConfig from environment variables set by CDK."""
+    cache_port = int(os.environ.get("CACHE_PORT", "6379"))
+
     return RuntimeConfig(
         stage=os.environ.get("STAGE", "dev"),
         aws_region=os.environ.get("AWS_REGION", "us-east-1"),
@@ -45,6 +51,8 @@ def load_runtime_config() -> RuntimeConfig:
         connections_table=os.environ["CONNECTIONS_TABLE"],
         event_bus_name=os.environ["EVENT_BUS_NAME"],
         secrets_prefix=os.environ.get("SECRETS_PREFIX", "realtime-agentic-api"),
+        cache_endpoint=os.environ.get("CACHE_ENDPOINT"),
+        cache_port=cache_port,
         dynamodb_endpoint=os.environ.get("DYNAMODB_ENDPOINT"),
         eventbridge_endpoint=os.environ.get("EVENTBRIDGE_ENDPOINT"),
     )
