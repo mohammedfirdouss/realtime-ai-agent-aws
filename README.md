@@ -31,26 +31,6 @@ cdk synth -c env=dev
 cdk deploy -c env=dev
 ```
 
-## Project Structure
-
-```
-.
-├── app.py                    # CDK app entry point
-├── cdk.json                  # CDK configuration
-├── infra/                    # CDK infrastructure definitions
-│   ├── config.py             # Environment configuration & constants
-│   └── foundation_stack.py   # Base stack (VPC, networking, secrets)
-├── runtime/                  # Lambda function code
-│   └── shared/               # Shared utilities across Lambdas
-│       ├── config.py          # Runtime env-var configuration
-│       ├── constants.py       # Shared constants (events, statuses, etc.)
-│       └── secrets.py         # Secrets Manager helper with caching
-├── tests/                    # Test suite
-│   ├── unit/                 # Unit tests
-│   └── property/             # Property-based tests (Hypothesis)
-└── specs/                    # Design & requirements docs
-```
-
 ## Environments
 
 | Environment | NAT Gateways | AZs | Notes |
