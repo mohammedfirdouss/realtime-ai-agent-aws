@@ -16,8 +16,6 @@ def _synth_template(config: EnvironmentConfig) -> Template:
         env=cdk.Environment(account=config.aws_account_id, region=config.aws_region),
     )
     return Template.from_stack(stack)
-
-
 def _dev_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="dev",
@@ -26,8 +24,6 @@ def _dev_config() -> EnvironmentConfig:
         nat_gateways=0,
         tags={"Environment": "dev"},
     )
-
-
 def _prod_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="prod",
@@ -37,8 +33,6 @@ def _prod_config() -> EnvironmentConfig:
         nat_gateways=2,
         tags={"Environment": "prod"},
     )
-
-
 class TestDatabaseStackTables:
     """Tests that all four DynamoDB tables are created."""
 
@@ -73,8 +67,6 @@ class TestDatabaseStackTables:
             "AWS::DynamoDB::Table",
             {"TableName": "realtime-agentic-api-dev-connections"},
         )
-
-
 class TestDatabaseStackKeySchema:
     """Tests for partition and sort key configuration."""
 
@@ -129,8 +121,6 @@ class TestDatabaseStackKeySchema:
                 ],
             },
         )
-
-
 class TestDatabaseStackGSIs:
     """Tests for Global Secondary Indexes."""
 
@@ -179,8 +169,6 @@ class TestDatabaseStackGSIs:
                 ),
             },
         )
-
-
 class TestDatabaseStackTTL:
     """Tests for TTL configuration."""
 
@@ -209,8 +197,6 @@ class TestDatabaseStackTTL:
                 },
             },
         )
-
-
 class TestDatabaseStackBilling:
     """Tests for billing mode configuration."""
 
@@ -223,8 +209,6 @@ class TestDatabaseStackBilling:
                 "BillingMode": "PAY_PER_REQUEST",
             },
         )
-
-
 class TestDatabaseStackDevRemovalPolicy:
     """Tests that dev tables use DESTROY removal policy."""
 
@@ -237,8 +221,6 @@ class TestDatabaseStackDevRemovalPolicy:
                 "UpdateReplacePolicy": "Delete",
             },
         )
-
-
 class TestDatabaseStackProd:
     """Tests for production-specific configuration."""
 
@@ -261,8 +243,6 @@ class TestDatabaseStackProd:
                 "PointInTimeRecoverySpecification": {"PointInTimeRecoveryEnabled": True},
             },
         )
-
-
 class TestDatabaseStackSSMParams:
     """Tests for SSM parameter publishing."""
 
@@ -270,8 +250,6 @@ class TestDatabaseStackSSMParams:
         template = _synth_template(_dev_config())
         # 4 table names + 4 table ARNs = 8
         template.resource_count_is("AWS::SSM::Parameter", 8)
-
-
 class TestDatabaseStackOutputs:
     """Tests for stack outputs."""
 

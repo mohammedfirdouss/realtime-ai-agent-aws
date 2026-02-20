@@ -99,8 +99,6 @@ class TestLocalLRUCache:
         assert cache.get("key2") is None
         assert cache.get("key1") == "new_value1"
         assert cache.get("key3") == "value3"
-
-
 class TestCacheServiceLocalOnly:
     """Tests for CacheService in local-only mode (no Redis)."""
 
@@ -148,8 +146,6 @@ class TestCacheServiceLocalOnly:
         deleted = service.invalidate_pattern("agent:*")
         assert deleted == 2
         assert service.get("agent:1") is None
-
-
 class TestCacheServiceCacheAside:
     """Tests for cache-aside pattern implementation."""
 
@@ -196,8 +192,6 @@ class TestCacheServiceCacheAside:
         service.set("key1", "value1")
         assert service.invalidate("key1") is True
         assert service.get("key1") is None
-
-
 class TestCacheServiceSerialization:
     """Tests for JSON serialization/deserialization."""
 
@@ -224,8 +218,6 @@ class TestCacheServiceSerialization:
         }
         service.set("key1", data)
         assert service.get("key1") == data
-
-
 class TestCacheServiceWithMockedRedis:
     """Tests for CacheService with mocked Redis client."""
 
@@ -314,8 +306,6 @@ class TestCacheServiceWithMockedRedis:
 
             assert result is True
             mock_client.delete.assert_called_once_with("key1")
-
-
 class TestCreateCacheService:
     """Tests for the create_cache_service factory function."""
 
@@ -333,8 +323,6 @@ class TestCreateCacheService:
             assert service.config is not None
             assert service.config.host == "localhost"
             assert service.config.port == 6379
-
-
 class TestCacheServiceContextManager:
     """Tests for context manager functionality."""
 

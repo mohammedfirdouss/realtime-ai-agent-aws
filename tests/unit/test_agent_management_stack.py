@@ -17,8 +17,6 @@ def _dev_config() -> EnvironmentConfig:
         nat_gateways=0,
         tags={"Environment": "dev"},
     )
-
-
 def _synth_template(config: EnvironmentConfig | None = None) -> Template:
     config = config or _dev_config()
     app = cdk.App()
@@ -44,8 +42,6 @@ def _synth_template(config: EnvironmentConfig | None = None) -> Template:
         env=env,
     )
     return Template.from_stack(stack)
-
-
 class TestAgentManagementStackLambda:
     """Test Lambda function resource creation."""
 
@@ -89,8 +85,6 @@ class TestAgentManagementStackLambda:
                 "Timeout": config.lambda_timeout_seconds,
             },
         )
-
-
 class TestAgentManagementStackIAM:
     """Test IAM permissions."""
 
@@ -113,8 +107,6 @@ class TestAgentManagementStackIAM:
                 }
             },
         )
-
-
 class TestAgentManagementStackOutputs:
     """Test stack outputs."""
 
@@ -131,8 +123,6 @@ class TestAgentManagementStackOutputs:
             "AgentManagementFnName",
             {"Description": "Agent management Lambda function name"},
         )
-
-
 class TestAgentManagementStackSSM:
     """Test SSM parameter creation."""
 

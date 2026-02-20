@@ -52,9 +52,7 @@ class AuthStack(Stack):
         # --- Outputs ---
         self._create_outputs()
 
-    # ------------------------------------------------------------------
     # Secrets
-    # ------------------------------------------------------------------
 
     def _create_secret(self, name: str, description: str) -> secretsmanager.Secret:
         return secretsmanager.Secret(
@@ -67,9 +65,7 @@ class AuthStack(Stack):
             ),
         )
 
-    # ------------------------------------------------------------------
     # Lambda Authorizers
-    # ------------------------------------------------------------------
 
     def _create_api_key_authorizer(self) -> _lambda.Function:
         """Create the API-key authorizer Lambda function."""
@@ -111,9 +107,7 @@ class AuthStack(Stack):
         self.jwt_secret.grant_read(fn)
         return fn
 
-    # ------------------------------------------------------------------
     # SSM Parameters
-    # ------------------------------------------------------------------
 
     def _publish_ssm_params(self) -> None:
         prefix = f"/{self._config.resource_prefix}"
@@ -150,9 +144,7 @@ class AuthStack(Stack):
             description="JWT signing key secret ARN",
         )
 
-    # ------------------------------------------------------------------
     # Outputs
-    # ------------------------------------------------------------------
 
     def _create_outputs(self) -> None:
         CfnOutput(

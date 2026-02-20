@@ -21,8 +21,6 @@ from runtime.shared.secrets import get_secret
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
 def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Lambda authorizer entry-point for API-key authentication.
 
@@ -68,13 +66,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         principal_id=user_id,
         context={"user_id": user_id, "role": role, "auth_type": "api_key"},
     )
-
-
-# ------------------------------------------------------------------
 # Helpers
-# ------------------------------------------------------------------
-
-
 def _extract_api_key(event: dict[str, Any]) -> str | None:
     """Extract the API key from various event formats."""
     # TOKEN authorizer: key is in authorizationToken
@@ -90,18 +82,12 @@ def _extract_api_key(event: dict[str, Any]) -> str | None:
             return header_value.strip()
 
     return None
-
-
 def _hash_key(api_key: str) -> str:
     """Produce a deterministic SHA-256 hex digest for an API key."""
     return hashlib.sha256(api_key.encode("utf-8")).hexdigest()
-
-
 def _extract_method_arn(event: dict[str, Any]) -> str:
     """Return the methodArn from the event, with a safe fallback."""
     return event.get("methodArn", "arn:aws:execute-api:*:*:*/*/*/*")
-
-
 def _allow_policy(
     event: dict[str, Any],
     *,
@@ -125,8 +111,6 @@ def _allow_policy(
     if context:
         policy["context"] = context
     return policy
-
-
 def _deny_policy(event: dict[str, Any]) -> dict[str, Any]:
     """Build an API Gateway *Deny* policy document."""
     return {
@@ -142,8 +126,6 @@ def _deny_policy(event: dict[str, Any]) -> dict[str, Any]:
             ],
         },
     }
-
-
 def validate_api_key(
     api_key: str,
     valid_keys: dict[str, Any],

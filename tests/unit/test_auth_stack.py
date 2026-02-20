@@ -16,8 +16,6 @@ def _synth_template(config: EnvironmentConfig) -> Template:
         env=cdk.Environment(account=config.aws_account_id, region=config.aws_region),
     )
     return Template.from_stack(stack)
-
-
 def _dev_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="dev",
@@ -26,8 +24,6 @@ def _dev_config() -> EnvironmentConfig:
         nat_gateways=0,
         tags={"Environment": "dev"},
     )
-
-
 def _prod_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="prod",
@@ -37,8 +33,6 @@ def _prod_config() -> EnvironmentConfig:
         nat_gateways=2,
         tags={"Environment": "prod"},
     )
-
-
 class TestAuthStackSecrets:
     """Tests for authentication secrets."""
 
@@ -76,8 +70,6 @@ class TestAuthStackSecrets:
                 "UpdateReplacePolicy": "Retain",
             },
         )
-
-
 class TestAuthStackLambdas:
     """Tests for authorizer Lambda functions."""
 
@@ -136,16 +128,12 @@ class TestAuthStackLambdas:
                 },
             },
         )
-
-
 class TestAuthStackSSMParams:
     """Tests for SSM parameters."""
 
     def test_ssm_parameters_created(self) -> None:
         template = _synth_template(_dev_config())
         template.resource_count_is("AWS::SSM::Parameter", 4)
-
-
 class TestAuthStackOutputs:
     """Tests for stack outputs."""
 

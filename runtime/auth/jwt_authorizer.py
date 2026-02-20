@@ -25,8 +25,6 @@ from runtime.shared.secrets import get_secret
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-
 def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Lambda authorizer entry-point for JWT authentication.
 
@@ -68,13 +66,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             "auth_type": "jwt",
         },
     )
-
-
-# ------------------------------------------------------------------
 # Token extraction
-# ------------------------------------------------------------------
-
-
 def _extract_bearer_token(event: dict[str, Any]) -> str | None:
     """Extract the JWT from the Authorization header."""
     # TOKEN authorizer: token is in authorizationToken
@@ -90,26 +82,16 @@ def _extract_bearer_token(event: dict[str, Any]) -> str | None:
                 return header_value[len(AUTH_BEARER_PREFIX) :].strip()
 
     return None
-
-
-# ------------------------------------------------------------------
 # Minimal HS256 JWT implementation (no external dependencies)
-# ------------------------------------------------------------------
-
-
 def _b64url_encode(data: bytes) -> str:
     """Base64url-encode without padding."""
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
-
-
 def _b64url_decode(s: str) -> bytes:
     """Base64url-decode, re-adding padding as needed."""
     padding = 4 - len(s) % 4
     if padding != 4:
         s += "=" * padding
     return base64.urlsafe_b64decode(s)
-
-
 def decode_jwt(token: str, signing_key: str) -> dict[str, Any] | None:
     """Decode and validate an HS256 JWT token.
 
@@ -161,8 +143,6 @@ def decode_jwt(token: str, signing_key: str) -> dict[str, Any] | None:
             return None
 
     return payload
-
-
 def create_jwt(payload: dict[str, Any], signing_key: str) -> str:
     """Create an HS256 JWT token (useful for testing).
 
@@ -179,8 +159,6 @@ def create_jwt(payload: dict[str, Any], signing_key: str) -> str:
     ).digest()
     signature_b64 = _b64url_encode(signature)
     return f"{header_b64}.{payload_b64}.{signature_b64}"
-
-
 def extract_user_identity(claims: dict[str, Any]) -> dict[str, str]:
     """Extract user identity fields from validated JWT claims.
 
@@ -192,17 +170,9 @@ def extract_user_identity(claims: dict[str, Any]) -> dict[str, str]:
     if role not in VALID_ROLES:
         role = ROLE_USER
     return {"user_id": str(user_id), "role": role}
-
-
-# ------------------------------------------------------------------
 # Policy helpers (shared shape with api_key_authorizer)
-# ------------------------------------------------------------------
-
-
 def _extract_method_arn(event: dict[str, Any]) -> str:
     return event.get("methodArn", "arn:aws:execute-api:*:*:*/*/*/*")
-
-
 def _allow_policy(
     event: dict[str, Any],
     *,
@@ -225,8 +195,6 @@ def _allow_policy(
     if context:
         policy["context"] = context
     return policy
-
-
 def _deny_policy(event: dict[str, Any]) -> dict[str, Any]:
     return {
         "principalId": "anonymous",

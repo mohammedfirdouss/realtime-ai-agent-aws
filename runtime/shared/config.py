@@ -41,8 +41,6 @@ class RuntimeConfig:
     # Optional overrides (useful for local testing)
     dynamodb_endpoint: str | None = None
     eventbridge_endpoint: str | None = None
-
-
 def load_runtime_config() -> RuntimeConfig:
     """Build RuntimeConfig from environment variables set by CDK."""
     cache_port = int(os.environ.get("CACHE_PORT", "6379"))

@@ -33,12 +33,8 @@ from runtime.shared.constants import (
 )
 
 logger = logging.getLogger(__name__)
-
-
 class EventValidationError(Exception):
     """Raised when event data fails validation."""
-
-
 class EventPublisher:
     """Publishes domain events to EventBridge.
 
@@ -53,9 +49,7 @@ class EventPublisher:
             kwargs["endpoint_url"] = config.eventbridge_endpoint
         self._client = boto3.client("events", **kwargs)
 
-    # ------------------------------------------------------------------
     # Public helpers
-    # ------------------------------------------------------------------
 
     def publish_agent_created(
         self,
@@ -232,9 +226,7 @@ class EventPublisher:
         }
         return self._put_event(EVENT_SOURCE_SCHEDULER, EVENT_SCHEDULED_TASK, detail)
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     @staticmethod
     def _require(name: str, value: str) -> None:

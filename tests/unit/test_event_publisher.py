@@ -23,8 +23,6 @@ def _config() -> RuntimeConfig:
         event_bus_name="test-events",
         secrets_prefix="test",
     )
-
-
 def _mock_client() -> MagicMock:
     """Return a mock boto3 events client with a successful put_events response."""
     client = MagicMock()
@@ -33,22 +31,16 @@ def _mock_client() -> MagicMock:
         "Entries": [{"EventId": "test-event-id-123"}],
     }
     return client
-
-
 def _publisher(client: MagicMock) -> EventPublisher:
     """Create an EventPublisher with a pre-configured mock client."""
     with patch("runtime.shared.event_publisher.boto3") as mock_boto:
         mock_boto.client.return_value = client
         pub = EventPublisher(_config())
     return pub
-
-
 def _last_put_entry(client: MagicMock) -> dict[str, Any]:
     """Extract the single entry from the most recent put_events call."""
     call_kwargs = client.put_events.call_args[1]
     return call_kwargs["Entries"][0]
-
-
 class TestEventPublisherAgentCreated:
     """Tests for publish_agent_created."""
 
@@ -87,8 +79,6 @@ class TestEventPublisherAgentCreated:
         pub = _publisher(_mock_client())
         with pytest.raises(EventValidationError, match="agent_id"):
             pub.publish_agent_created("   ", "user-1", "name")
-
-
 class TestEventPublisherAgentDeleted:
     """Tests for publish_agent_deleted."""
 
@@ -104,8 +94,6 @@ class TestEventPublisherAgentDeleted:
         detail = json.loads(entry["Detail"])
         assert detail["agentId"] == "agent-1"
         assert detail["userId"] == "user-1"
-
-
 class TestEventPublisherTaskCreated:
     """Tests for publish_task_created."""
 
@@ -126,8 +114,6 @@ class TestEventPublisherTaskCreated:
         pub = _publisher(_mock_client())
         with pytest.raises(EventValidationError, match="description"):
             pub.publish_task_created("t", "a", "")
-
-
 class TestEventPublisherTaskCompleted:
     """Tests for publish_task_completed."""
 
@@ -153,8 +139,6 @@ class TestEventPublisherTaskCompleted:
         pub = _publisher(_mock_client())
         with pytest.raises(EventValidationError, match="Invalid task status"):
             pub.publish_task_completed("t", "a", "invalid-status")
-
-
 class TestEventPublisherTaskProgress:
     """Tests for publish_task_progress."""
 
@@ -201,8 +185,6 @@ class TestEventPublisherTaskProgress:
         pub.publish_task_progress("t", "a", 100)
         detail = json.loads(_last_put_entry(client)["Detail"])
         assert detail["progressPct"] == 100
-
-
 class TestEventPublisherStatusChanged:
     """Tests for publish_status_changed."""
 
@@ -228,8 +210,6 @@ class TestEventPublisherStatusChanged:
         pub = _publisher(_mock_client())
         with pytest.raises(EventValidationError, match="new_status"):
             pub.publish_status_changed("a", "idle", "bogus")
-
-
 class TestEventPublisherErrorOccurred:
     """Tests for publish_error_occurred."""
 
@@ -258,8 +238,6 @@ class TestEventPublisherErrorOccurred:
         assert detail["agentId"] == "a1"
         assert detail["taskId"] == "t1"
         assert detail["metadata"] == {"extra": "info"}
-
-
 class TestEventPublisherScheduledTask:
     """Tests for publish_scheduled_task."""
 
@@ -274,8 +252,6 @@ class TestEventPublisherScheduledTask:
         assert entry["DetailType"] == "ScheduledTask"
         detail = json.loads(entry["Detail"])
         assert detail["scheduleExpression"] == "rate(1 hour)"
-
-
 class TestEventPublisherFailedEntry:
     """Tests for handling EventBridge failures."""
 

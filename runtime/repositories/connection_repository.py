@@ -13,18 +13,14 @@ from typing import Any
 
 from runtime.shared.constants import PK_CONNECTION, SK_METADATA
 
-from .base_repository import BaseRepository, ItemNotFoundError
+from .base_repository import BaseRepository
 
 # Default connection TTL: 2 hours
 DEFAULT_CONNECTION_TTL_SECONDS = 2 * 60 * 60
-
-
 class ConnectionRepository(BaseRepository):
     """CRUD operations for WebSocket connection records."""
 
-    # ------------------------------------------------------------------
     # Create
-    # ------------------------------------------------------------------
 
     def create_connection(
         self,
@@ -49,9 +45,7 @@ class ConnectionRepository(BaseRepository):
         self.put_item(item)
         return item
 
-    # ------------------------------------------------------------------
     # Read
-    # ------------------------------------------------------------------
 
     def get_connection(self, connection_id: str) -> dict[str, Any]:
         """Get a connection record. Raises ItemNotFoundError if missing."""
@@ -61,9 +55,7 @@ class ConnectionRepository(BaseRepository):
         """Get a connection, returning None if not found."""
         return self.get_item_or_none(f"{PK_CONNECTION}{connection_id}", SK_METADATA)
 
-    # ------------------------------------------------------------------
     # Subscription management
-    # ------------------------------------------------------------------
 
     def add_subscription(self, connection_id: str, agent_id: str) -> dict[str, Any]:
         """Subscribe a connection to an agent's updates.
@@ -116,17 +108,13 @@ class ConnectionRepository(BaseRepository):
         conn = self.get_connection(connection_id)
         return conn.get("subscriptions", [])
 
-    # ------------------------------------------------------------------
     # Delete
-    # ------------------------------------------------------------------
 
     def delete_connection(self, connection_id: str) -> None:
         """Remove a connection record (on disconnect)."""
         self.delete_item(f"{PK_CONNECTION}{connection_id}", SK_METADATA)
 
-    # ------------------------------------------------------------------
     # Query helpers
-    # ------------------------------------------------------------------
 
     def get_connections_for_user(self, user_id: str) -> list[dict[str, Any]]:
         """Get all active connections for a user.

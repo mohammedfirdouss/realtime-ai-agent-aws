@@ -24,8 +24,6 @@ class TestEnvironmentConfig:
         )
         with pytest.raises(AttributeError):
             config.stage = "prod"  # type: ignore[misc]
-
-
 class TestGetEnvironmentConfig:
     def test_dev(self) -> None:
         config = get_environment_config("dev")

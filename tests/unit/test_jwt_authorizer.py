@@ -16,8 +16,6 @@ from runtime.auth.jwt_authorizer import (
 
 _METHOD_ARN = "arn:aws:execute-api:us-east-1:123456789012:abc123/dev/GET/agents"
 _SIGNING_KEY = "test-secret-key-for-unit-tests"
-
-
 class TestDecodeJwt:
     def test_valid_token(self) -> None:
         payload = {"sub": "user-1", "role": "admin", "exp": time.time() + 3600}
@@ -63,8 +61,6 @@ class TestDecodeJwt:
         parts[1] = tampered.decode()
         tampered_token = ".".join(parts)
         assert decode_jwt(tampered_token, _SIGNING_KEY) is None
-
-
 class TestCreateJwt:
     def test_roundtrip(self) -> None:
         payload = {"sub": "user-1", "iss": "test", "exp": time.time() + 3600}
@@ -78,8 +74,6 @@ class TestCreateJwt:
         token = create_jwt({"sub": "x"}, _SIGNING_KEY)
         parts = token.split(".")
         assert len(parts) == 3
-
-
 class TestExtractUserIdentity:
     def test_extracts_sub_and_role(self) -> None:
         claims = {"sub": "user-99", "role": "admin"}
@@ -96,8 +90,6 @@ class TestExtractUserIdentity:
         claims = {"sub": "user-1", "role": "superadmin"}
         identity = extract_user_identity(claims)
         assert identity["role"] == "user"
-
-
 class TestJwtAuthorizerHandler:
     def _token_event(self, token: str) -> dict[str, Any]:
         return {

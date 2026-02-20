@@ -48,9 +48,7 @@ class EventsStack(Stack):
         # --- Outputs ---
         self._create_outputs()
 
-    # ------------------------------------------------------------------
     # Event Bus
-    # ------------------------------------------------------------------
 
     def _create_event_bus(self) -> events.EventBus:
         """Create custom EventBridge event bus."""
@@ -80,9 +78,7 @@ class EventsStack(Stack):
 
         return bus
 
-    # ------------------------------------------------------------------
     # Event Rules
-    # ------------------------------------------------------------------
 
     def _create_agent_events_rule(self) -> events.Rule:
         """Rule matching AgentCreated and AgentDeleted events."""
@@ -154,9 +150,7 @@ class EventsStack(Stack):
             ),
         )
 
-    # ------------------------------------------------------------------
     # SSM Parameters
-    # ------------------------------------------------------------------
 
     def _publish_ssm_params(self) -> None:
         prefix = f"/{self._config.resource_prefix}"
@@ -177,9 +171,7 @@ class EventsStack(Stack):
             description="EventBridge event bus ARN",
         )
 
-    # ------------------------------------------------------------------
     # Outputs
-    # ------------------------------------------------------------------
 
     def _create_outputs(self) -> None:
         CfnOutput(

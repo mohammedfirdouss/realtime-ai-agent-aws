@@ -11,11 +11,8 @@ import pytest
 from runtime.handlers import agent_management as mod
 from runtime.repositories.base_repository import ItemNotFoundError
 
-# ---------------------------------------------------------------------------
+
 # Fixtures
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture(autouse=True)
 def _reset_globals():
     """Reset module-level singletons between tests."""
@@ -26,8 +23,6 @@ def _reset_globals():
     mod._config = None
     mod._repo = None
     mod._publisher = None
-
-
 @pytest.fixture()
 def mock_env(monkeypatch: pytest.MonkeyPatch):
     """Set required environment variables."""
@@ -38,8 +33,6 @@ def mock_env(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("CONTEXT_TABLE", "test-context")
     monkeypatch.setenv("CONNECTIONS_TABLE", "test-connections")
     monkeypatch.setenv("EVENT_BUS_NAME", "test-bus")
-
-
 def _api_event(
     method: str,
     body: dict[str, Any] | None = None,
@@ -63,13 +56,7 @@ def _api_event(
     if body is not None:
         event["body"] = json.dumps(body)
     return event
-
-
-# ---------------------------------------------------------------------------
 # Tests: Routing
-# ---------------------------------------------------------------------------
-
-
 class TestRouting:
     """Test request routing logic."""
 
@@ -112,13 +99,7 @@ class TestRouting:
         event = _api_event("PATCH")
         result = mod.handler(event, None)
         assert result["statusCode"] == 405
-
-
-# ---------------------------------------------------------------------------
 # Tests: Create Agent
-# ---------------------------------------------------------------------------
-
-
 class TestCreateAgent:
     """Test agent creation handler."""
 
@@ -188,13 +169,7 @@ class TestCreateAgent:
         call_kwargs = repo.create_agent.call_args[1]
         assert call_kwargs["configuration"]["system_prompt"] == "Hello"
         assert call_kwargs["configuration"]["tools"] == ["t1"]
-
-
-# ---------------------------------------------------------------------------
 # Tests: Get Agent
-# ---------------------------------------------------------------------------
-
-
 class TestGetAgent:
     """Test single-agent retrieval handler."""
 
@@ -225,13 +200,7 @@ class TestGetAgent:
         event = _api_event("GET", path_params={"agentId": "missing"})
         result = mod._handle_get(event, None)
         assert result["statusCode"] == 404
-
-
-# ---------------------------------------------------------------------------
 # Tests: List Agents
-# ---------------------------------------------------------------------------
-
-
 class TestListAgents:
     """Test agent listing handler."""
 
@@ -269,13 +238,7 @@ class TestListAgents:
 
         body = json.loads(result["body"])
         assert "nextToken" in body
-
-
-# ---------------------------------------------------------------------------
 # Tests: Update Agent
-# ---------------------------------------------------------------------------
-
-
 class TestUpdateAgent:
     """Test agent update handler."""
 
@@ -320,13 +283,7 @@ class TestUpdateAgent:
         event = _api_event("PUT", path_params={"agentId": "a1"}, body={})
         result = mod._handle_update(event, None)
         assert result["statusCode"] == 400
-
-
-# ---------------------------------------------------------------------------
 # Tests: Delete Agent
-# ---------------------------------------------------------------------------
-
-
 class TestDeleteAgent:
     """Test agent deletion handler."""
 
@@ -354,13 +311,7 @@ class TestDeleteAgent:
         event = _api_event("DELETE", path_params={"agentId": "missing"})
         result = mod._handle_delete(event, None)
         assert result["statusCode"] == 404
-
-
-# ---------------------------------------------------------------------------
 # Tests: Pydantic Validation
-# ---------------------------------------------------------------------------
-
-
 class TestValidationModels:
     """Test Pydantic request validation models."""
 
@@ -380,13 +331,7 @@ class TestValidationModels:
     def test_update_agent_request_valid_status(self):
         req = mod.UpdateAgentRequest(status="idle")
         assert req.status == "idle"
-
-
-# ---------------------------------------------------------------------------
 # Tests: Helper functions
-# ---------------------------------------------------------------------------
-
-
 class TestHelpers:
     """Test utility functions."""
 

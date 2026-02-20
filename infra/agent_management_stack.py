@@ -45,9 +45,7 @@ class AgentManagementStack(Stack):
         # --- Outputs ---
         self._create_outputs()
 
-    # ------------------------------------------------------------------
     # Lambda
-    # ------------------------------------------------------------------
 
     def _create_lambda(
         self,
@@ -83,9 +81,7 @@ class AgentManagementStack(Stack):
 
         return fn
 
-    # ------------------------------------------------------------------
     # SSM Parameters
-    # ------------------------------------------------------------------
 
     def _publish_ssm_params(self) -> None:
         prefix = f"/{self._config.resource_prefix}"
@@ -98,9 +94,7 @@ class AgentManagementStack(Stack):
             description="Agent management Lambda ARN",
         )
 
-    # ------------------------------------------------------------------
     # Outputs
-    # ------------------------------------------------------------------
 
     def _create_outputs(self) -> None:
         CfnOutput(

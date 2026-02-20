@@ -52,9 +52,7 @@ class CacheStack(Stack):
         # --- Outputs ---
         self._create_outputs()
 
-    # ------------------------------------------------------------------
     # Subnet Group
-    # ------------------------------------------------------------------
 
     def _create_subnet_group(self) -> elasticache.CfnSubnetGroup:
         """Create a subnet group for ElastiCache placement.
@@ -81,9 +79,7 @@ class CacheStack(Stack):
 
         return subnet_group
 
-    # ------------------------------------------------------------------
     # Redis Cluster
-    # ------------------------------------------------------------------
 
     def _create_redis_cluster(self) -> elasticache.CfnCacheCluster:
         """Create ElastiCache Redis cluster.
@@ -127,9 +123,7 @@ class CacheStack(Stack):
 
         return cluster
 
-    # ------------------------------------------------------------------
     # SSM Parameters
-    # ------------------------------------------------------------------
 
     def _publish_ssm_params(self) -> None:
         """Publish cache cluster endpoint to SSM for Lambda discovery."""
@@ -151,9 +145,7 @@ class CacheStack(Stack):
             description="Redis cache cluster endpoint port",
         )
 
-    # ------------------------------------------------------------------
     # Outputs
-    # ------------------------------------------------------------------
 
     def _create_outputs(self) -> None:
         """Create CloudFormation outputs for cache cluster details."""

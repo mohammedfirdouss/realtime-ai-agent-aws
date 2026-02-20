@@ -18,9 +18,7 @@ from runtime.repositories.connection_repository import ConnectionRepository
 from runtime.repositories.context_repository import ContextRepository
 from runtime.repositories.task_repository import TaskRepository
 
-# ---------------------------------------------------------------------------
 # Hypothesis strategies
-# ---------------------------------------------------------------------------
 
 _safe_text = st.text(
     alphabet=st.characters(
@@ -60,18 +58,12 @@ _message = st.fixed_dictionaries(
         "timestamp": st.just("2025-01-01T00:00:00+00:00"),
     }
 )
-
-
-# ---------------------------------------------------------------------------
 # Fixtures / helpers
-# ---------------------------------------------------------------------------
 
 AGENTS_TABLE = "test-agents"
 TASKS_TABLE = "test-tasks"
 CONTEXT_TABLE = "test-context"
 CONNECTIONS_TABLE = "test-connections"
-
-
 def _create_tables() -> None:
     """Create all four DynamoDB tables in moto."""
     client = boto3.client("dynamodb", region_name="us-east-1")
@@ -155,31 +147,17 @@ def _create_tables() -> None:
         ],
         BillingMode="PAY_PER_REQUEST",
     )
-
-
 def _agent_repo() -> AgentRepository:
     return AgentRepository(AGENTS_TABLE, region="us-east-1")
-
-
 def _task_repo() -> TaskRepository:
     return TaskRepository(TASKS_TABLE, region="us-east-1")
-
-
 def _context_repo() -> ContextRepository:
     return ContextRepository(CONTEXT_TABLE, region="us-east-1")
-
-
 def _connection_repo() -> ConnectionRepository:
     return ConnectionRepository(CONNECTIONS_TABLE, region="us-east-1")
-
-
-# ---------------------------------------------------------------------------
 # Property 61: Agent creation with unique ID
 # For any created agent, the agent should be stored in DynamoDB with a unique ID.
 # Feature: realtime-agentic-api, Property 61
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.property
 class TestProperty61AgentCreationUniqueId:
 
@@ -221,15 +199,9 @@ class TestProperty61AgentCreationUniqueId:
                     configuration=config,
                     agent_id=agent["agentId"],
                 )
-
-
-# ---------------------------------------------------------------------------
 # Property 62: State update persistence
 # For any agent state change, the corresponding DynamoDB record should be updated.
 # Feature: realtime-agentic-api, Property 62
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.property
 class TestProperty62StateUpdatePersistence:
 
@@ -272,15 +244,9 @@ class TestProperty62StateUpdatePersistence:
 
             retrieved = repo.get_agent(agent["agentId"])
             assert retrieved["name"] == new_name
-
-
-# ---------------------------------------------------------------------------
 # Property 63: Task persistence
 # For any created task, the task details should be stored in DynamoDB.
 # Feature: realtime-agentic-api, Property 63
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.property
 class TestProperty63TaskPersistence:
 
@@ -324,16 +290,10 @@ class TestProperty63TaskPersistence:
 
             if new_status in ("completed", "failed", "cancelled"):
                 assert "completedAt" in retrieved
-
-
-# ---------------------------------------------------------------------------
 # Property 64: Conversation history append
 # For any conversation turn, the new turn should be appended to the
 # conversation history in DynamoDB.
 # Feature: realtime-agentic-api, Property 64
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.property
 class TestProperty64ConversationHistoryAppend:
 
@@ -370,15 +330,9 @@ class TestProperty64ConversationHistoryAppend:
             latest = repo.get_latest_context(agent_id)
             assert latest is not None
             assert len(latest["conversationHistory"]) == len(batch1) + len(batch2)
-
-
-# ---------------------------------------------------------------------------
 # Property 65: Latest state retrieval
 # For any agent state query, the latest state should be retrieved from DynamoDB.
 # Feature: realtime-agentic-api, Property 65
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.property
 class TestProperty65LatestStateRetrieval:
 
@@ -426,13 +380,7 @@ class TestProperty65LatestStateRetrieval:
             assert latest is not None
             # Most recent snapshot has the last message
             assert latest["conversationHistory"] == [messages[-1]]
-
-
-# ---------------------------------------------------------------------------
 # Additional data access property tests
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.property
 class TestAgentDeletion:
     """Property 4: Agent deletion completeness."""
@@ -451,8 +399,6 @@ class TestAgentDeletion:
 
             with pytest.raises(ItemNotFoundError):
                 repo.get_agent(agent["agentId"])
-
-
 @pytest.mark.property
 class TestConnectionRepository:
     """Tests for WebSocket connection management."""
@@ -501,8 +447,6 @@ class TestConnectionRepository:
             repo.remove_subscription("conn-sub", agent_ids[0])
             subs_after = repo.get_subscriptions("conn-sub")
             assert agent_ids[0] not in subs_after
-
-
 @pytest.mark.property
 class TestTaskQueryMethods:
     """Tests for task listing and GSI queries."""

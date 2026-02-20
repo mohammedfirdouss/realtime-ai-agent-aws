@@ -14,16 +14,10 @@ from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
-
-
 class ItemNotFoundError(Exception):
     """Raised when a requested item does not exist."""
-
-
 class ConditionalCheckError(Exception):
     """Raised when a conditional write fails (e.g. item already exists)."""
-
-
 class BaseRepository:
     """Thin wrapper around a single DynamoDB table resource."""
 
@@ -48,9 +42,7 @@ class BaseRepository:
     def table_name(self) -> str:
         return self._table_name
 
-    # ------------------------------------------------------------------
     # Core operations
-    # ------------------------------------------------------------------
 
     def put_item(
         self,
@@ -149,9 +141,7 @@ class BaseRepository:
             raise
         return response.get("Attributes", {})
 
-    # ------------------------------------------------------------------
     # Query helpers
-    # ------------------------------------------------------------------
 
     def query(
         self,
@@ -234,9 +224,7 @@ class BaseRepository:
         last_key = response.get("LastEvaluatedKey")
         return items, last_key
 
-    # ------------------------------------------------------------------
     # Batch operations
-    # ------------------------------------------------------------------
 
     def batch_write(self, items: list[dict[str, Any]]) -> None:
         """Write multiple items in a batch (max 25 per call)."""

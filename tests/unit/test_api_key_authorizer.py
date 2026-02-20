@@ -15,13 +15,9 @@ from runtime.auth.api_key_authorizer import (
 )
 
 _METHOD_ARN = "arn:aws:execute-api:us-east-1:123456789012:abc123/dev/GET/agents"
-
-
 def _make_valid_keys(raw_key: str, user_id: str = "user-1", role: str = "user") -> dict[str, Any]:
     key_hash = hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
     return {key_hash: {"user_id": user_id, "role": role}}
-
-
 class TestHashKey:
     def test_deterministic(self) -> None:
         assert _hash_key("abc") == _hash_key("abc")
@@ -32,8 +28,6 @@ class TestHashKey:
     def test_sha256_format(self) -> None:
         h = _hash_key("test")
         assert len(h) == 64  # 256 bits in hex
-
-
 class TestValidateApiKey:
     def test_valid_key(self) -> None:
         keys = _make_valid_keys("my-secret-key")
@@ -50,8 +44,6 @@ class TestValidateApiKey:
         keys = _make_valid_keys("my-secret-key")
         result = validate_api_key("", keys)
         assert result is None
-
-
 class TestApiKeyAuthorizerHandler:
     def _token_event(self, api_key: str) -> dict[str, Any]:
         return {

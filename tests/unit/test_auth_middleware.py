@@ -54,8 +54,6 @@ class TestHasPermission:
 
     def test_unknown_permission_denied(self) -> None:
         assert not has_permission(ROLE_ADMIN, "unknown:permission")
-
-
 class TestCheckResourceAccess:
     def test_admin_accesses_any_resource(self) -> None:
         assert check_resource_access(ROLE_ADMIN, "user-1", "user-2")
@@ -69,8 +67,6 @@ class TestCheckResourceAccess:
     def test_none_owner_always_allowed(self) -> None:
         assert check_resource_access(ROLE_USER, "user-1", None)
         assert check_resource_access(ROLE_SERVICE, "svc-1", None)
-
-
 class TestRequirePermissionDecorator:
     def _make_event(
         self, user_id: str, role: str, body: dict[str, Any] | None = None
@@ -155,8 +151,6 @@ class TestRequirePermissionDecorator:
             @require_permission("invalid:perm")
             def my_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
                 return {"statusCode": 200}
-
-
 class TestForbiddenResponse:
     def test_structure(self) -> None:
         resp = _forbidden_response("test message")

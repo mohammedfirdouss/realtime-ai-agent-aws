@@ -50,8 +50,6 @@ class EnvironmentConfig:
 
     def resource_name(self, name: str) -> str:
         return f"{self.resource_prefix}-{name}"
-
-
 # Pre-defined environment configurations
 # NOTE: aws_account_id values are placeholders; set them to your AWS account IDs before deploy.
 _ENV_CONFIGS: dict[str, dict[str, object]] = {
@@ -80,8 +78,6 @@ _ENV_CONFIGS: dict[str, dict[str, object]] = {
         "tags": {"Environment": "prod", "Project": "realtime-agentic-api"},
     },
 }
-
-
 def get_environment_config(env_name: str) -> EnvironmentConfig:
     """Get configuration for the given environment name.
 

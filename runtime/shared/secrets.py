@@ -18,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 _secret_cache: dict[str, str] = {}
 _secrets_clients: dict[str | None, Any] = {}
-
-
 def get_secret(secret_name: str, region: str | None = None) -> str:
     """Retrieve a plain-text secret from Secrets Manager (with in-memory cache).
 
@@ -48,8 +46,6 @@ def get_secret(secret_name: str, region: str | None = None) -> str:
     except ClientError:
         logger.exception("Failed to retrieve secret: %s", secret_name)
         raise
-
-
 def get_secret_json(secret_name: str, region: str | None = None) -> dict[str, Any]:
     """Retrieve a JSON-encoded secret and parse it.
 
@@ -62,8 +58,6 @@ def get_secret_json(secret_name: str, region: str | None = None) -> dict[str, An
     """
     raw = get_secret(secret_name, region)
     return json.loads(raw)
-
-
 def clear_cache() -> None:
     """Clear the in-memory secret cache (useful for testing)."""
     _secret_cache.clear()

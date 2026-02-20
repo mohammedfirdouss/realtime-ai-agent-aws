@@ -54,9 +54,7 @@ class FoundationStack(Stack):
         # --- Outputs ---
         self._create_outputs()
 
-    # ------------------------------------------------------------------
     # VPC
-    # ------------------------------------------------------------------
 
     def _create_vpc(self) -> ec2.Vpc:
         subnet_config: list[ec2.SubnetConfiguration] = [
@@ -102,9 +100,7 @@ class FoundationStack(Stack):
 
         return vpc
 
-    # ------------------------------------------------------------------
     # Security Groups
-    # ------------------------------------------------------------------
 
     def _create_lambda_security_group(self) -> ec2.SecurityGroup:
         sg = ec2.SecurityGroup(
@@ -134,9 +130,7 @@ class FoundationStack(Stack):
         )
         return sg
 
-    # ------------------------------------------------------------------
     # Secrets Manager
-    # ------------------------------------------------------------------
 
     def _create_secret(self, name: str, description: str) -> secretsmanager.Secret:
         return secretsmanager.Secret(
@@ -149,9 +143,7 @@ class FoundationStack(Stack):
             ),
         )
 
-    # ------------------------------------------------------------------
     # SSM Parameters (for cross-stack references)
-    # ------------------------------------------------------------------
 
     def _publish_ssm_params(self) -> None:
         prefix = f"/{self._config.resource_prefix}"
@@ -196,9 +188,7 @@ class FoundationStack(Stack):
             description="Anthropic API key secret ARN",
         )
 
-    # ------------------------------------------------------------------
     # Outputs
-    # ------------------------------------------------------------------
 
     def _create_outputs(self) -> None:
         CfnOutput(self, "VpcId", value=self.vpc.vpc_id, description="VPC ID")

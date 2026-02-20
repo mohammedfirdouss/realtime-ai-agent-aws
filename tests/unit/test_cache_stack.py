@@ -29,8 +29,6 @@ def _synth_template(config: EnvironmentConfig) -> Template:
     )
 
     return Template.from_stack(cache_stack)
-
-
 def _dev_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="dev",
@@ -39,8 +37,6 @@ def _dev_config() -> EnvironmentConfig:
         nat_gateways=0,
         tags={"Environment": "dev"},
     )
-
-
 def _prod_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="prod",
@@ -51,8 +47,6 @@ def _prod_config() -> EnvironmentConfig:
         cache_node_type="cache.t3.small",
         tags={"Environment": "prod"},
     )
-
-
 class TestCacheStackCluster:
     """Tests that ElastiCache Redis cluster is created correctly."""
 
@@ -101,8 +95,6 @@ class TestCacheStackCluster:
             "AWS::ElastiCache::CacheCluster",
             {"Port": 6379},
         )
-
-
 class TestCacheStackSubnetGroup:
     """Tests for ElastiCache subnet group."""
 
@@ -116,8 +108,6 @@ class TestCacheStackSubnetGroup:
             "AWS::ElastiCache::SubnetGroup",
             {"CacheSubnetGroupName": "realtime-agentic-api-dev-cache-subnet-group"},
         )
-
-
 class TestCacheStackSnapshots:
     """Tests for snapshot configuration."""
 
@@ -134,8 +124,6 @@ class TestCacheStackSnapshots:
             "AWS::ElastiCache::CacheCluster",
             {"SnapshotRetentionLimit": 7},
         )
-
-
 class TestCacheStackRemovalPolicy:
     """Tests for removal policy configuration."""
 
@@ -158,8 +146,6 @@ class TestCacheStackRemovalPolicy:
                 "UpdateReplacePolicy": "Retain",
             },
         )
-
-
 class TestCacheStackSSMParams:
     """Tests for SSM parameter publishing."""
 
@@ -167,8 +153,6 @@ class TestCacheStackSSMParams:
         template = _synth_template(_dev_config())
         # 2 parameters: endpoint and port
         template.resource_count_is("AWS::SSM::Parameter", 2)
-
-
 class TestCacheStackOutputs:
     """Tests for stack outputs."""
 

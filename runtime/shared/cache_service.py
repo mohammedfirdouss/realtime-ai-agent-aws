@@ -19,12 +19,8 @@ from typing import Any, Callable, TypeVar, cast
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
-
-
 class CacheError(Exception):
     """Raised when a cache operation fails."""
-
-
 @dataclass(frozen=True)
 class CacheConfig:
     """Configuration for the cache service."""
@@ -37,8 +33,6 @@ class CacheConfig:
     decode_responses: bool = True
     max_connections: int = 10
     local_cache_max_size: int = 1000
-
-
 class LocalLRUCache:
     """Simple in-memory LRU cache for local fallback or testing.
 
@@ -104,8 +98,6 @@ class LocalLRUCache:
             self._cache.pop(key, None)
             return True
         return False
-
-
 @dataclass
 class CacheService:
     """Cache service with cache-aside pattern support.
@@ -168,9 +160,7 @@ class CacheService:
             logger.warning("Failed to connect to Redis: %s, falling back to local cache", exc)
             self._use_local_only = True
 
-    # ------------------------------------------------------------------
     # Core Operations
-    # ------------------------------------------------------------------
 
     def get(self, key: str) -> Any | None:
         """Get a value from the cache.
@@ -258,9 +248,7 @@ class CacheService:
             logger.warning("Cache exists check failed for key %s: %s", key, exc)
             return False
 
-    # ------------------------------------------------------------------
     # Cache-Aside Pattern
-    # ------------------------------------------------------------------
 
     def get_or_fetch(
         self,
@@ -334,9 +322,7 @@ class CacheService:
             logger.warning("Cache invalidate_pattern failed for %s: %s", pattern, exc)
             return 0
 
-    # ------------------------------------------------------------------
     # Serialization
-    # ------------------------------------------------------------------
 
     def _serialize(self, value: Any) -> str:
         """Serialize a value to JSON string."""
@@ -346,9 +332,7 @@ class CacheService:
         """Deserialize a JSON string to a Python object."""
         return json.loads(raw)
 
-    # ------------------------------------------------------------------
     # Health Check
-    # ------------------------------------------------------------------
 
     def health_check(self) -> dict[str, Any]:
         """Check the health of the cache service.
@@ -374,9 +358,7 @@ class CacheService:
 
         return result
 
-    # ------------------------------------------------------------------
     # Context Manager
-    # ------------------------------------------------------------------
 
     def close(self) -> None:
         """Close the Redis connection."""
@@ -391,8 +373,6 @@ class CacheService:
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()
-
-
 def create_cache_service(
     host: str | None = None,
     port: int = 6379,

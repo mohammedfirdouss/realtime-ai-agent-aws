@@ -30,11 +30,7 @@ from runtime.shared.event_publisher import EventPublisher
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# ---------------------------------------------------------------------------
 # Pydantic validation models
-# ---------------------------------------------------------------------------
-
-
 class CreateAgentRequest(BaseModel):
     """Validation model for agent creation requests."""
 
@@ -42,8 +38,6 @@ class CreateAgentRequest(BaseModel):
     configuration: dict[str, Any] = Field(default_factory=dict)
     system_prompt: str | None = Field(None, max_length=MAX_SYSTEM_PROMPT_LENGTH)
     tools: list[str] = Field(default_factory=list, max_length=MAX_TOOLS_PER_AGENT)
-
-
 class UpdateAgentRequest(BaseModel):
     """Validation model for agent update requests."""
 
@@ -56,17 +50,11 @@ class UpdateAgentRequest(BaseModel):
             raise ValueError(
                 f"Invalid status '{self.status}'. Must be one of: {sorted(VALID_AGENT_STATUSES)}"
             )
-
-
-# ---------------------------------------------------------------------------
 # Cold-start initialisation
-# ---------------------------------------------------------------------------
 
 _config: RuntimeConfig | None = None
 _repo: AgentRepository | None = None
 _publisher: EventPublisher | None = None
-
-
 def _init() -> tuple[RuntimeConfig, AgentRepository, EventPublisher]:
     """Lazy-initialise shared resources on first invocation."""
     global _config, _repo, _publisher  # noqa: PLW0603
@@ -81,13 +69,7 @@ def _init() -> tuple[RuntimeConfig, AgentRepository, EventPublisher]:
     assert _repo is not None
     assert _publisher is not None
     return _config, _repo, _publisher
-
-
-# ---------------------------------------------------------------------------
 # Lambda entry point
-# ---------------------------------------------------------------------------
-
-
 def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Route requests to the appropriate CRUD handler."""
     http_method = event.get("httpMethod", "").upper()
@@ -111,13 +93,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     except Exception:
         logger.exception("Unhandled error in agent management handler")
         return _response(500, {"message": "Internal server error"})
-
-
-# ---------------------------------------------------------------------------
 # CRUD handlers
-# ---------------------------------------------------------------------------
-
-
 @require_permission(PERM_AGENT_CREATE)
 def _handle_create(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Create a new agent."""
@@ -154,8 +130,6 @@ def _handle_create(event: dict[str, Any], context: Any) -> dict[str, Any]:
     )
 
     return _response(201, _sanitise_item(agent))
-
-
 @require_permission(PERM_AGENT_READ)
 def _handle_list(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """List agents for the authenticated user."""
@@ -185,8 +159,6 @@ def _handle_list(event: dict[str, Any], context: Any) -> dict[str, Any]:
         result["nextToken"] = json.dumps(last_key)
 
     return _response(200, result)
-
-
 @require_permission(PERM_AGENT_READ)
 def _handle_get(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Get a single agent by ID."""
@@ -200,8 +172,6 @@ def _handle_get(event: dict[str, Any], context: Any) -> dict[str, Any]:
         return _response(404, {"message": "Agent not found"})
 
     return _response(200, _sanitise_item(agent))
-
-
 @require_permission(PERM_AGENT_UPDATE)
 def _handle_update(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Update an existing agent."""
@@ -240,8 +210,6 @@ def _handle_update(event: dict[str, Any], context: Any) -> dict[str, Any]:
         return _response(404, {"message": "Agent not found"})
 
     return _response(200, _sanitise_item(agent))
-
-
 @require_permission(PERM_AGENT_DELETE)
 def _handle_delete(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Delete an agent."""
@@ -261,13 +229,7 @@ def _handle_delete(event: dict[str, Any], context: Any) -> dict[str, Any]:
     )
 
     return _response(204, None)
-
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
-
 def _get_auth_context(event: dict[str, Any]) -> dict[str, str]:
     """Extract authorizer context from the API Gateway event."""
     rc = event.get("requestContext") or {}
@@ -276,8 +238,6 @@ def _get_auth_context(event: dict[str, Any]) -> dict[str, str]:
         "user_id": str(authorizer.get("user_id", "")),
         "role": str(authorizer.get("role", "")),
     }
-
-
 def _parse_body(event: dict[str, Any]) -> dict[str, Any] | None:
     """Parse the JSON body from an API Gateway event."""
     body = event.get("body")
@@ -289,14 +249,10 @@ def _parse_body(event: dict[str, Any]) -> dict[str, Any] | None:
         except (json.JSONDecodeError, TypeError):
             return None
     return body if isinstance(body, dict) else None
-
-
 def _sanitise_item(item: dict[str, Any]) -> dict[str, Any]:
     """Remove DynamoDB key attributes from the response."""
     internal_keys = {"PK", "SK", "GSI1PK", "GSI1SK"}
     return {k: v for k, v in item.items() if k not in internal_keys}
-
-
 def _response(status_code: int, body: Any) -> dict[str, Any]:
     """Build an API Gateway proxy integration response."""
     result: dict[str, Any] = {

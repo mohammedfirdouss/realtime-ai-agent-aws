@@ -26,9 +26,7 @@ from .base_repository import BaseRepository, ItemNotFoundError
 class AgentRepository(BaseRepository):
     """CRUD operations for Agent records."""
 
-    # ------------------------------------------------------------------
     # Create
-    # ------------------------------------------------------------------
 
     def create_agent(
         self,
@@ -67,9 +65,7 @@ class AgentRepository(BaseRepository):
         )
         return item
 
-    # ------------------------------------------------------------------
     # Read
-    # ------------------------------------------------------------------
 
     def get_agent(self, agent_id: str, *, user_id: str | None = None) -> dict[str, Any]:
         """Get an agent by ID. Raises ItemNotFoundError if not found."""
@@ -104,9 +100,7 @@ class AgentRepository(BaseRepository):
             sk_name="GSI1SK",
         )
 
-    # ------------------------------------------------------------------
     # Update
-    # ------------------------------------------------------------------
 
     def update_agent(
         self,
@@ -162,9 +156,7 @@ class AgentRepository(BaseRepository):
         """Convenience method to update only the agent's status."""
         return self.update_agent(agent_id, updates={"status": status}, user_id=user_id)
 
-    # ------------------------------------------------------------------
     # Delete
-    # ------------------------------------------------------------------
 
     def delete_agent(self, agent_id: str, *, user_id: str | None = None) -> None:
         """Delete an agent. Raises ItemNotFoundError if not found."""

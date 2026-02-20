@@ -20,9 +20,7 @@ from .base_repository import BaseRepository, ItemNotFoundError
 class TaskRepository(BaseRepository):
     """CRUD and query operations for Task records."""
 
-    # ------------------------------------------------------------------
     # Create
-    # ------------------------------------------------------------------
 
     def create_task(
         self,
@@ -55,9 +53,7 @@ class TaskRepository(BaseRepository):
         self.put_item(item, condition_expression="attribute_not_exists(PK) AND attribute_not_exists(SK)")
         return item
 
-    # ------------------------------------------------------------------
     # Read
-    # ------------------------------------------------------------------
 
     def get_task(self, agent_id: str, task_id: str) -> dict[str, Any]:
         """Get a task by agent ID and task ID. Raises ItemNotFoundError."""
@@ -100,9 +96,7 @@ class TaskRepository(BaseRepository):
             raise ItemNotFoundError(f"Task not found: taskId={task_id}")
         return items[0]
 
-    # ------------------------------------------------------------------
     # Update
-    # ------------------------------------------------------------------
 
     def update_task_status(
         self,
@@ -189,9 +183,7 @@ class TaskRepository(BaseRepository):
             condition_expression="attribute_exists(PK)",
         )
 
-    # ------------------------------------------------------------------
     # Delete
-    # ------------------------------------------------------------------
 
     def delete_task(self, agent_id: str, task_id: str) -> None:
         """Delete a task."""

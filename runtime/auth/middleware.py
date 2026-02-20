@@ -24,13 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Type alias for a Lambda handler function.
 HandlerFunc = Callable[[dict[str, Any], Any], dict[str, Any]]
-
-
-# ------------------------------------------------------------------
 # Permission checking
-# ------------------------------------------------------------------
-
-
 def has_permission(role: str, permission: str) -> bool:
     """Return ``True`` if *role* grants *permission*.
 
@@ -43,8 +37,6 @@ def has_permission(role: str, permission: str) -> bool:
         return False
     role_perms = ROLE_PERMISSIONS.get(role, frozenset())
     return permission in role_perms or PERM_ADMIN_ALL in role_perms
-
-
 def check_resource_access(
     role: str,
     user_id: str,
@@ -61,13 +53,7 @@ def check_resource_access(
     if resource_owner_id is None:
         return True
     return user_id == resource_owner_id
-
-
-# ------------------------------------------------------------------
 # Decorator
-# ------------------------------------------------------------------
-
-
 def require_permission(
     permission: str,
     *,
@@ -131,13 +117,7 @@ def require_permission(
         return wrapper
 
     return decorator
-
-
-# ------------------------------------------------------------------
 # Helpers
-# ------------------------------------------------------------------
-
-
 def _extract_auth_context(event: dict[str, Any]) -> dict[str, str]:
     """Pull authorizer context from the API Gateway event."""
     request_context = event.get("requestContext") or {}
@@ -147,8 +127,6 @@ def _extract_auth_context(event: dict[str, Any]) -> dict[str, str]:
         "role": str(authorizer.get("role", "")),
         "auth_type": str(authorizer.get("auth_type", "")),
     }
-
-
 def _extract_resource_owner(event: dict[str, Any], field: str) -> str | None:
     """Extract the resource owner id from the event body or path params."""
     # Try path parameters first
@@ -171,8 +149,6 @@ def _extract_resource_owner(event: dict[str, Any], field: str) -> str | None:
             return str(value)
 
     return None
-
-
 def _forbidden_response(message: str) -> dict[str, Any]:
     """Return a 403 Forbidden API Gateway proxy response."""
     import json

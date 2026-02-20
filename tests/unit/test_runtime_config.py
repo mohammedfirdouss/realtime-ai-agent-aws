@@ -9,7 +9,6 @@ import pytest
 
 from runtime.shared.config import load_runtime_config
 
-
 _REQUIRED_ENV = {
     "AGENTS_TABLE": "agents",
     "TASKS_TABLE": "tasks",
@@ -17,8 +16,6 @@ _REQUIRED_ENV = {
     "CONNECTIONS_TABLE": "connections",
     "EVENT_BUS_NAME": "bus",
 }
-
-
 class TestLoadRuntimeConfig:
     def test_defaults(self) -> None:
         with patch.dict(os.environ, _REQUIRED_ENV, clear=True):

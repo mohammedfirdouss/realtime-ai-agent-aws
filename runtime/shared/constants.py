@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-# ---------------------------------------------------------------------------
 # Event sources and detail types (EventBridge)
-# ---------------------------------------------------------------------------
 EVENT_SOURCE_AGENTS = "realtime-agentic-api.agents"
 EVENT_SOURCE_TASKS = "realtime-agentic-api.tasks"
 EVENT_SOURCE_STATUS = "realtime-agentic-api.status"
@@ -20,9 +18,7 @@ EVENT_STATUS_CHANGED = "AgentStatusChanged"
 EVENT_ERROR_OCCURRED = "ErrorOccurred"
 EVENT_SCHEDULED_TASK = "ScheduledTask"
 
-# ---------------------------------------------------------------------------
 # Agent statuses
-# ---------------------------------------------------------------------------
 AGENT_STATUS_IDLE = "idle"
 AGENT_STATUS_PROCESSING = "processing"
 AGENT_STATUS_WAITING = "waiting"
@@ -32,9 +28,7 @@ VALID_AGENT_STATUSES = frozenset(
     {AGENT_STATUS_IDLE, AGENT_STATUS_PROCESSING, AGENT_STATUS_WAITING, AGENT_STATUS_ERROR}
 )
 
-# ---------------------------------------------------------------------------
 # Task statuses
-# ---------------------------------------------------------------------------
 TASK_STATUS_PENDING = "pending"
 TASK_STATUS_RUNNING = "running"
 TASK_STATUS_COMPLETED = "completed"
@@ -51,9 +45,7 @@ VALID_TASK_STATUSES = frozenset(
     }
 )
 
-# ---------------------------------------------------------------------------
 # Step statuses
-# ---------------------------------------------------------------------------
 STEP_STATUS_PENDING = "pending"
 STEP_STATUS_RUNNING = "running"
 STEP_STATUS_COMPLETED = "completed"
@@ -70,9 +62,7 @@ VALID_STEP_STATUSES = frozenset(
     }
 )
 
-# ---------------------------------------------------------------------------
 # Step types
-# ---------------------------------------------------------------------------
 STEP_TYPE_REASONING = "reasoning"
 STEP_TYPE_TOOL_CALL = "tool_call"
 STEP_TYPE_RESPONSE = "response"
@@ -82,17 +72,13 @@ VALID_STEP_TYPES = frozenset(
     {STEP_TYPE_REASONING, STEP_TYPE_TOOL_CALL, STEP_TYPE_RESPONSE, STEP_TYPE_DECISION}
 )
 
-# ---------------------------------------------------------------------------
 # LLM Providers
-# ---------------------------------------------------------------------------
 LLM_PROVIDER_OPENAI = "openai"
 LLM_PROVIDER_ANTHROPIC = "anthropic"
 
 VALID_LLM_PROVIDERS = frozenset({LLM_PROVIDER_OPENAI, LLM_PROVIDER_ANTHROPIC})
 
-# ---------------------------------------------------------------------------
 # DynamoDB key prefixes
-# ---------------------------------------------------------------------------
 PK_AGENT = "AGENT#"
 PK_TASK = "TASK#"
 PK_CONTEXT = "CONTEXT#"
@@ -101,9 +87,7 @@ PK_USER = "USER#"
 
 SK_METADATA = "METADATA"
 
-# ---------------------------------------------------------------------------
 # Retry / resilience
-# ---------------------------------------------------------------------------
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RETRY_INITIAL_DELAY_MS = 100
 DEFAULT_RETRY_MAX_DELAY_MS = 10_000
@@ -118,26 +102,20 @@ RETRYABLE_ERROR_CODES = frozenset(
     }
 )
 
-# ---------------------------------------------------------------------------
 # Cache TTLs (seconds)
-# ---------------------------------------------------------------------------
 CACHE_TTL_AGENT_CONFIG = 300  # 5 minutes
 CACHE_TTL_TASK_STATUS = 30  # 30 seconds
 CACHE_TTL_AUTH_TOKEN = 3600  # 1 hour
 CACHE_TTL_LLM_RESPONSE = 3600  # 1 hour
 
-# ---------------------------------------------------------------------------
 # Validation limits
-# ---------------------------------------------------------------------------
 MAX_TASK_DESCRIPTION_LENGTH = 10_000
 MAX_SYSTEM_PROMPT_LENGTH = 10_000
 MAX_TOOLS_PER_AGENT = 50
 TEMPERATURE_MIN = 0.0
 TEMPERATURE_MAX = 2.0
 
-# ---------------------------------------------------------------------------
 # Authentication & Authorization
-# ---------------------------------------------------------------------------
 AUTH_HEADER_API_KEY = "x-api-key"
 AUTH_HEADER_AUTHORIZATION = "Authorization"
 AUTH_BEARER_PREFIX = "Bearer "

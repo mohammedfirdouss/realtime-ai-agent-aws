@@ -62,9 +62,7 @@ class DatabaseStack(Stack):
         # --- Outputs ---
         self._create_outputs()
 
-    # ------------------------------------------------------------------
     # Agents Table
-    # ------------------------------------------------------------------
 
     def _create_agents_table(
         self,
@@ -106,9 +104,7 @@ class DatabaseStack(Stack):
 
         return table
 
-    # ------------------------------------------------------------------
     # Tasks Table
-    # ------------------------------------------------------------------
 
     def _create_tasks_table(
         self,
@@ -150,9 +146,7 @@ class DatabaseStack(Stack):
 
         return table
 
-    # ------------------------------------------------------------------
     # Context Table
-    # ------------------------------------------------------------------
 
     def _create_context_table(
         self,
@@ -182,9 +176,7 @@ class DatabaseStack(Stack):
 
         return table
 
-    # ------------------------------------------------------------------
     # Connections Table
-    # ------------------------------------------------------------------
 
     def _create_connections_table(
         self,
@@ -214,9 +206,7 @@ class DatabaseStack(Stack):
 
         return table
 
-    # ------------------------------------------------------------------
     # SSM Parameters
-    # ------------------------------------------------------------------
 
     def _publish_ssm_params(self) -> None:
         prefix = f"/{self._config.resource_prefix}"
@@ -285,9 +275,7 @@ class DatabaseStack(Stack):
             description="Connections DynamoDB table ARN",
         )
 
-    # ------------------------------------------------------------------
     # Outputs
-    # ------------------------------------------------------------------
 
     def _create_outputs(self) -> None:
         CfnOutput(

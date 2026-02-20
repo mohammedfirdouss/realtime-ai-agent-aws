@@ -16,8 +16,6 @@ def _synth_template(config: EnvironmentConfig) -> Template:
         env=cdk.Environment(account=config.aws_account_id, region=config.aws_region),
     )
     return Template.from_stack(stack)
-
-
 def _dev_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="dev",
@@ -26,8 +24,6 @@ def _dev_config() -> EnvironmentConfig:
         nat_gateways=0,
         tags={"Environment": "dev"},
     )
-
-
 def _prod_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="prod",
@@ -37,8 +33,6 @@ def _prod_config() -> EnvironmentConfig:
         nat_gateways=2,
         tags={"Environment": "prod"},
     )
-
-
 class TestFoundationStackDev:
     """Tests for the dev environment foundation stack."""
 
@@ -104,8 +98,6 @@ class TestFoundationStackDev:
             "LambdaSecurityGroupId",
             {"Description": "Lambda security group ID"},
         )
-
-
 class TestFoundationStackProd:
     """Tests for the prod environment foundation stack."""
 

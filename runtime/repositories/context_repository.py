@@ -19,14 +19,10 @@ from .base_repository import BaseRepository
 DEFAULT_CONTEXT_TTL_SECONDS = 7 * 24 * 60 * 60
 
 SK_CONTEXT_PREFIX = "CONTEXT#"
-
-
 class ContextRepository(BaseRepository):
     """Append-oriented operations for conversation context records."""
 
-    # ------------------------------------------------------------------
     # Create / Append
-    # ------------------------------------------------------------------
 
     def put_context(
         self,
@@ -117,9 +113,7 @@ class ContextRepository(BaseRepository):
 
         return written
 
-    # ------------------------------------------------------------------
     # Read
-    # ------------------------------------------------------------------
 
     def get_latest_context(self, agent_id: str) -> dict[str, Any] | None:
         """Retrieve the most recent context snapshot for an agent."""
@@ -146,9 +140,7 @@ class ContextRepository(BaseRepository):
             limit=limit,
         )
 
-    # ------------------------------------------------------------------
     # Delete
-    # ------------------------------------------------------------------
 
     def delete_agent_context(self, agent_id: str) -> int:
         """Delete all context records for an agent. Returns count deleted."""

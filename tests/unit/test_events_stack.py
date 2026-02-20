@@ -16,8 +16,6 @@ def _synth_template(config: EnvironmentConfig) -> Template:
         env=cdk.Environment(account=config.aws_account_id, region=config.aws_region),
     )
     return Template.from_stack(stack)
-
-
 def _dev_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="dev",
@@ -26,8 +24,6 @@ def _dev_config() -> EnvironmentConfig:
         nat_gateways=0,
         tags={"Environment": "dev"},
     )
-
-
 def _prod_config() -> EnvironmentConfig:
     return EnvironmentConfig(
         stage="prod",
@@ -37,8 +33,6 @@ def _prod_config() -> EnvironmentConfig:
         nat_gateways=2,
         tags={"Environment": "prod"},
     )
-
-
 class TestEventsStackBus:
     """Tests for the EventBridge bus creation."""
 
@@ -59,8 +53,6 @@ class TestEventsStackBus:
             "AWS::Events::EventBus",
             {"Name": "realtime-agentic-api-prod-events"},
         )
-
-
 class TestEventsStackArchive:
     """Tests for event archive configuration."""
 
@@ -88,8 +80,6 @@ class TestEventsStackArchive:
             "AWS::Events::Archive",
             {"RetentionDays": 30},
         )
-
-
 class TestEventsStackRules:
     """Tests for event rules."""
 
@@ -161,8 +151,6 @@ class TestEventsStackRules:
                 },
             },
         )
-
-
 class TestEventsStackSSMParams:
     """Tests for SSM parameter publishing."""
 
@@ -190,8 +178,6 @@ class TestEventsStackSSMParams:
                 "Type": "String",
             },
         )
-
-
 class TestEventsStackOutputs:
     """Tests for stack outputs."""
 
