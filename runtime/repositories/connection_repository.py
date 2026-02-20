@@ -68,21 +68,23 @@ class ConnectionRepository(BaseRepository):
     def add_subscription(self, connection_id: str, agent_id: str) -> dict[str, Any]:
         """Subscribe a connection to an agent's updates.
 
-        Uses a SET-add so duplicates are harmless.
-        We store subscriptions as a list; the update appends if not present.
+        Uses a conditional update to avoid duplicate subscriptions.
         """
+        conn = self.get_connection(connection_id)
+        subs: list[str] = conn.get("subscriptions", [])
+        if agent_id in subs:
+            return conn
+
+        new_subs = subs + [agent_id]
         return self.update_item(
             f"{PK_CONNECTION}{connection_id}",
             SK_METADATA,
-            update_expression=(
-                "SET subscriptions = list_append("
-                "if_not_exists(subscriptions, :empty), :agent)"
-            ),
+            update_expression="SET subscriptions = :subs",
             expression_attribute_values={
-                ":agent": [agent_id],
-                ":empty": [],
+                ":subs": new_subs,
+                ":expected_subs": subs,
             },
-            condition_expression="attribute_exists(PK)",
+            condition_expression="attribute_exists(PK) AND subscriptions = :expected_subs",
         )
 
     def remove_subscription(
@@ -94,14 +96,19 @@ class ConnectionRepository(BaseRepository):
         """
         conn = self.get_connection(connection_id)
         subs: list[str] = conn.get("subscriptions", [])
+        if agent_id not in subs:
+            return conn
         new_subs = [s for s in subs if s != agent_id]
 
         return self.update_item(
             f"{PK_CONNECTION}{connection_id}",
             SK_METADATA,
             update_expression="SET subscriptions = :subs",
-            expression_attribute_values={":subs": new_subs},
-            condition_expression="attribute_exists(PK)",
+            expression_attribute_values={
+                ":subs": new_subs,
+                ":expected_subs": subs,
+            },
+            condition_expression="attribute_exists(PK) AND subscriptions = :expected_subs",
         )
 
     def get_subscriptions(self, connection_id: str) -> list[str]:

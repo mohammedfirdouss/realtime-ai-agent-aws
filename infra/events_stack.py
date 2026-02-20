@@ -62,6 +62,8 @@ class EventsStack(Stack):
 
         if self._config.stage == "dev":
             bus.apply_removal_policy(RemovalPolicy.DESTROY)
+        else:
+            bus.apply_removal_policy(RemovalPolicy.RETAIN)
 
         # Archive all events for replay / debugging
         bus.archive(
@@ -72,7 +74,7 @@ class EventsStack(Stack):
             if self._config.stage == "dev"
             else Duration.days(30),
             event_pattern=events.EventPattern(
-                source=events.Match.prefix("realtime-agentic-api"),
+                source=[events.Match.prefix("realtime-agentic-api")],
             ),
         )
 

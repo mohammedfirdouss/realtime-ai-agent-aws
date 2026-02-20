@@ -17,6 +17,7 @@ from runtime.shared.constants import (
     PK_AGENT,
     PK_USER,
     SK_METADATA,
+    VALID_AGENT_STATUSES,
 )
 
 from .base_repository import BaseRepository, ItemNotFoundError
@@ -70,9 +71,11 @@ class AgentRepository(BaseRepository):
     # Read
     # ------------------------------------------------------------------
 
-    def get_agent(self, agent_id: str) -> dict[str, Any]:
+    def get_agent(self, agent_id: str, *, user_id: str | None = None) -> dict[str, Any]:
         """Get an agent by ID. Raises ItemNotFoundError if not found."""
-        return self.get_item(f"{PK_AGENT}{agent_id}", SK_METADATA)
+        agent = self.get_item(f"{PK_AGENT}{agent_id}", SK_METADATA)
+        self._ensure_owner(agent, user_id)
+        return agent
 
     def get_agent_or_none(self, agent_id: str) -> dict[str, Any] | None:
         """Get an agent by ID, returning None if not found."""
@@ -110,6 +113,7 @@ class AgentRepository(BaseRepository):
         agent_id: str,
         *,
         updates: dict[str, Any],
+        user_id: str | None = None,
     ) -> dict[str, Any]:
         """Update agent fields. Returns the full updated item.
 
@@ -119,7 +123,13 @@ class AgentRepository(BaseRepository):
         allowed_fields = {"name", "configuration", "status"}
         filtered = {k: v for k, v in updates.items() if k in allowed_fields}
         if not filtered:
-            return self.get_agent(agent_id)
+            return self.get_agent(agent_id, user_id=user_id)
+
+        if "status" in filtered and filtered["status"] not in VALID_AGENT_STATUSES:
+            raise ValueError(f"Invalid agent status: {filtered['status']}")
+
+        if user_id is not None:
+            self.get_agent(agent_id, user_id=user_id)
 
         now = datetime.now(timezone.utc).isoformat()
         filtered["updatedAt"] = now
@@ -146,16 +156,25 @@ class AgentRepository(BaseRepository):
             condition_expression="attribute_exists(PK)",
         )
 
-    def update_agent_status(self, agent_id: str, status: str) -> dict[str, Any]:
+    def update_agent_status(
+        self, agent_id: str, status: str, *, user_id: str | None = None
+    ) -> dict[str, Any]:
         """Convenience method to update only the agent's status."""
-        return self.update_agent(agent_id, updates={"status": status})
+        return self.update_agent(agent_id, updates={"status": status}, user_id=user_id)
 
     # ------------------------------------------------------------------
     # Delete
     # ------------------------------------------------------------------
 
-    def delete_agent(self, agent_id: str) -> None:
+    def delete_agent(self, agent_id: str, *, user_id: str | None = None) -> None:
         """Delete an agent. Raises ItemNotFoundError if not found."""
         # Verify existence first
-        self.get_agent(agent_id)
+        self.get_agent(agent_id, user_id=user_id)
         self.delete_item(f"{PK_AGENT}{agent_id}", SK_METADATA)
+
+    @staticmethod
+    def _ensure_owner(agent: dict[str, Any], user_id: str | None) -> None:
+        if user_id is None:
+            return
+        if agent.get("userId") != user_id:
+            raise ItemNotFoundError("Agent not found")

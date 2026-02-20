@@ -53,6 +53,7 @@ class EnvironmentConfig:
 
 
 # Pre-defined environment configurations
+# NOTE: aws_account_id values are placeholders; set them to your AWS account IDs before deploy.
 _ENV_CONFIGS: dict[str, dict[str, object]] = {
     "dev": {
         "stage": "dev",

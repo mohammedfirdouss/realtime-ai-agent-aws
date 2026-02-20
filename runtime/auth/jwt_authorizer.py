@@ -57,13 +57,16 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         logger.warning("JWT validation failed")
         return _deny_policy(event)
 
-    user_id: str = claims.get("sub", "unknown")
-    role: str = claims.get("role", ROLE_USER)
+    identity = extract_user_identity(claims)
 
     return _allow_policy(
         event,
-        principal_id=user_id,
-        context={"user_id": user_id, "role": role, "auth_type": "jwt"},
+        principal_id=identity["user_id"],
+        context={
+            "user_id": identity["user_id"],
+            "role": identity["role"],
+            "auth_type": "jwt",
+        },
     )
 
 

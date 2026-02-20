@@ -161,13 +161,15 @@ class BaseRepository:
         sk_between: tuple[str, str] | None = None,
         scan_forward: bool = True,
         limit: int | None = None,
+        auto_paginate: bool = False,
         index_name: str | None = None,
         pk_name: str = "PK",
         sk_name: str = "SK",
     ) -> list[dict[str, Any]]:
         """Query items by partition key with optional sort key conditions.
 
-        Returns a list of items (may be empty).
+        Returns a list of items (may be empty). Set auto_paginate=True to
+        retrieve all pages when no limit is specified.
         """
         key_condition = Key(pk_name).eq(pk_value)
         if sk_begins_with:
@@ -188,8 +190,8 @@ class BaseRepository:
         response = self._table.query(**kwargs)
         items.extend(response.get("Items", []))
 
-        # Auto-paginate when no limit is specified
-        while "LastEvaluatedKey" in response and limit is None:
+        # Auto-paginate when explicitly requested
+        while "LastEvaluatedKey" in response and limit is None and auto_paginate:
             kwargs["ExclusiveStartKey"] = response["LastEvaluatedKey"]
             response = self._table.query(**kwargs)
             items.extend(response.get("Items", []))

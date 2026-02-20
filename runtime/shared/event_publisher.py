@@ -78,8 +78,9 @@ class EventPublisher:
             "agentId": agent_id,
             "userId": user_id,
             "agentName": agent_name,
-            **(metadata or {}),
         }
+        if metadata:
+            detail["metadata"] = metadata
         return self._put_event(EVENT_SOURCE_AGENTS, EVENT_AGENT_CREATED, detail)
 
     def publish_agent_deleted(
@@ -111,8 +112,9 @@ class EventPublisher:
             "taskId": task_id,
             "agentId": agent_id,
             "description": description,
-            **(metadata or {}),
         }
+        if metadata:
+            detail["metadata"] = metadata
         return self._put_event(EVENT_SOURCE_TASKS, EVENT_TASK_CREATED, detail)
 
     def publish_task_completed(

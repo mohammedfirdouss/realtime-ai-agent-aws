@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from runtime.shared.constants import PK_AGENT, PK_TASK, TASK_STATUS_PENDING
+from runtime.shared.constants import PK_AGENT, PK_TASK, TASK_STATUS_PENDING, VALID_TASK_STATUSES
 
 from .base_repository import BaseRepository, ItemNotFoundError
 
@@ -111,6 +111,8 @@ class TaskRepository(BaseRepository):
         status: str,
     ) -> dict[str, Any]:
         """Update the task status and GSI sort key."""
+        if status not in VALID_TASK_STATUSES:
+            raise ValueError(f"Invalid task status: {status}")
         now = datetime.now(timezone.utc).isoformat()
         update_parts = [
             "#st = :status",

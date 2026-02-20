@@ -15,6 +15,7 @@ from typing import Any
 from runtime.shared.constants import (
     AUTH_HEADER_API_KEY,
     ROLE_USER,
+    VALID_ROLES,
 )
 from runtime.shared.secrets import get_secret
 
@@ -59,6 +60,8 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
 
     user_id: str = key_entry.get("user_id", "unknown")
     role: str = key_entry.get("role", ROLE_USER)
+    if role not in VALID_ROLES:
+        role = ROLE_USER
 
     return _allow_policy(
         event,

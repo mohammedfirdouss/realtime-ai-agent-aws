@@ -60,6 +60,16 @@ STEP_STATUS_COMPLETED = "completed"
 STEP_STATUS_FAILED = "failed"
 STEP_STATUS_SKIPPED = "skipped"
 
+VALID_STEP_STATUSES = frozenset(
+    {
+        STEP_STATUS_PENDING,
+        STEP_STATUS_RUNNING,
+        STEP_STATUS_COMPLETED,
+        STEP_STATUS_FAILED,
+        STEP_STATUS_SKIPPED,
+    }
+)
+
 # ---------------------------------------------------------------------------
 # Step types
 # ---------------------------------------------------------------------------
@@ -67,6 +77,10 @@ STEP_TYPE_REASONING = "reasoning"
 STEP_TYPE_TOOL_CALL = "tool_call"
 STEP_TYPE_RESPONSE = "response"
 STEP_TYPE_DECISION = "decision"
+
+VALID_STEP_TYPES = frozenset(
+    {STEP_TYPE_REASONING, STEP_TYPE_TOOL_CALL, STEP_TYPE_RESPONSE, STEP_TYPE_DECISION}
+)
 
 # ---------------------------------------------------------------------------
 # LLM Providers

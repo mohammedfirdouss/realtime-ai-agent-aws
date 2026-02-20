@@ -69,28 +69,53 @@ class ContextRepository(BaseRepository):
     ) -> dict[str, Any]:
         """Append new messages to the agent's context.
 
-        Loads the latest context, extends the conversation history
-        with the new messages, and writes a new snapshot.
+        Uses a simple optimistic retry loop to reduce the chance of
+        overwriting concurrent appends.
         """
-        latest = self.get_latest_context(agent_id)
-        history: list[dict[str, Any]] = []
-        agent_memory: dict[str, Any] = {}
-        task_state: dict[str, Any] = {}
+        max_retries = 3
+        written: dict[str, Any] | None = None
 
-        if latest:
-            history = list(latest.get("conversationHistory", []))
-            agent_memory = dict(latest.get("agentMemory", {}))
-            task_state = dict(latest.get("taskState", {}))
+        for _ in range(max_retries):
+            latest = self.get_latest_context(agent_id)
+            history: list[dict[str, Any]] = []
+            agent_memory: dict[str, Any] = {}
+            task_state: dict[str, Any] = {}
 
-        history.extend(messages)
+            if latest:
+                history = list(latest.get("conversationHistory", []))
+                agent_memory = dict(latest.get("agentMemory", {}))
+                task_state = dict(latest.get("taskState", {}))
 
-        return self.put_context(
-            agent_id=agent_id,
-            conversation_history=history,
-            agent_memory=agent_memory,
-            task_state=task_state,
-            ttl_seconds=ttl_seconds,
-        )
+            history.extend(messages)
+
+            written = self.put_context(
+                agent_id=agent_id,
+                conversation_history=history,
+                agent_memory=agent_memory,
+                task_state=task_state,
+                ttl_seconds=ttl_seconds,
+            )
+
+            latest_after = self.get_latest_context(agent_id)
+            if not latest_after:
+                return written
+            if latest_after.get("SK") == written.get("SK"):
+                return written
+
+            latest_history = latest_after.get("conversationHistory", [])
+            if len(latest_history) >= len(messages):
+                tail = latest_history[-len(messages) :]
+                if tail == messages:
+                    return latest_after
+
+        if written is None:
+            return self.put_context(
+                agent_id=agent_id,
+                conversation_history=messages,
+                ttl_seconds=ttl_seconds,
+            )
+
+        return written
 
     # ------------------------------------------------------------------
     # Read
@@ -127,11 +152,21 @@ class ContextRepository(BaseRepository):
 
     def delete_agent_context(self, agent_id: str) -> int:
         """Delete all context records for an agent. Returns count deleted."""
-        items = self.query(
-            f"{PK_AGENT}{agent_id}",
-            sk_begins_with=SK_CONTEXT_PREFIX,
-        )
-        if items:
-            keys = [(item["PK"], item["SK"]) for item in items]
-            self.batch_delete(keys)
-        return len(items)
+        deleted = 0
+        last_key: dict[str, Any] | None = None
+
+        while True:
+            items, last_key = self.query_page(
+                f"{PK_AGENT}{agent_id}",
+                sk_begins_with=SK_CONTEXT_PREFIX,
+                limit=100,
+                exclusive_start_key=last_key,
+            )
+            if items:
+                keys = [(item["PK"], item["SK"]) for item in items]
+                self.batch_delete(keys)
+                deleted += len(items)
+            if not last_key:
+                break
+
+        return deleted

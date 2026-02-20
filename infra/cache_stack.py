@@ -92,6 +92,10 @@ class CacheStack(Stack):
         - dev: Single node, cache.t3.micro, no snapshots
         - staging: Single node, cache.t3.micro, daily snapshots
         - prod: Larger node type, daily snapshots, multi-AZ ready
+
+        Note: This stack uses CfnCacheCluster without in-transit or at-rest
+        encryption/auth. For sensitive data, prefer a CfnReplicationGroup
+        configured with encryption and an auth token.
         """
         # Determine snapshot retention
         snapshot_retention = 0 if self._config.stage == "dev" else 7

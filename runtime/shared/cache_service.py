@@ -3,14 +3,15 @@
 Provides a CacheService class that wraps Redis operations with:
 - get/set/delete operations with JSON serialization
 - Cache-aside pattern helper methods
-- TTL-based expiration using constants
-- LRU eviction (configured in Redis via maxmemory-policy)
+ - TTL-based expiration using constants
+ - Compatibility with Redis LRU eviction when configured via maxmemory-policy
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Any, Callable, TypeVar, cast
@@ -53,15 +54,18 @@ class LocalLRUCache:
         """Get a value from the cache. Returns None if not found."""
         if key not in self._cache:
             return None
+        if self._is_expired(key):
+            return None
         # Move to end (most recently used)
         self._cache.move_to_end(key)
         return self._cache[key][0]
 
     def set(self, key: str, value: Any, ttl: int | None = None) -> None:
-        """Set a value in the cache with optional TTL (not enforced in memory)."""
+        """Set a value in the cache with optional TTL."""
         if key in self._cache:
             self._cache.move_to_end(key)
-        self._cache[key] = (value, ttl)
+        expires_at = time.time() + ttl if ttl is not None else None
+        self._cache[key] = (value, expires_at)
         # Evict oldest if over capacity
         while len(self._cache) > self._max_size:
             self._cache.popitem(last=False)
@@ -75,7 +79,11 @@ class LocalLRUCache:
 
     def exists(self, key: str) -> bool:
         """Check if a key exists in the cache."""
-        return key in self._cache
+        if key not in self._cache:
+            return False
+        if self._is_expired(key):
+            return False
+        return True
 
     def clear(self) -> None:
         """Clear all entries from the cache."""
@@ -84,6 +92,18 @@ class LocalLRUCache:
     def size(self) -> int:
         """Return the current number of entries in the cache."""
         return len(self._cache)
+
+    def _is_expired(self, key: str) -> bool:
+        value = self._cache.get(key)
+        if value is None:
+            return True
+        expires_at = value[1]
+        if expires_at is None:
+            return False
+        if time.time() >= expires_at:
+            self._cache.pop(key, None)
+            return True
+        return False
 
 
 @dataclass
@@ -245,9 +265,9 @@ class CacheService:
     def get_or_fetch(
         self,
         key: str,
-        fetch_fn: Callable[[], T],
+        fetch_fn: Callable[[], T | None],
         ttl: int | None = None,
-    ) -> T:
+    ) -> T | None:
         """Implement cache-aside pattern.
 
         1. Check cache for key
@@ -290,11 +310,13 @@ class CacheService:
         Uses Redis SCAN to find matching keys (avoids blocking KEYS command).
         Returns the number of keys deleted.
 
-        Note: This only works with Redis, local cache is cleared entirely.
+        Note: In local-only mode, the local cache is cleared and the number
+        of cleared entries is returned.
         """
         if self._use_local_only or self._client is None:
+            deleted_count = self._local_cache.size()
             self._local_cache.clear()
-            return 0
+            return deleted_count
 
         try:
             deleted_count = 0
