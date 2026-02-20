@@ -104,6 +104,32 @@ class TestDatabaseStackKeySchema:
             },
         )
 
+    def test_context_table_key_schema(self) -> None:
+        template = _synth_template(_dev_config())
+        template.has_resource_properties(
+            "AWS::DynamoDB::Table",
+            {
+                "TableName": "realtime-agentic-api-dev-context",
+                "KeySchema": [
+                    {"AttributeName": "PK", "KeyType": "HASH"},
+                    {"AttributeName": "SK", "KeyType": "RANGE"},
+                ],
+            },
+        )
+
+    def test_connections_table_key_schema(self) -> None:
+        template = _synth_template(_dev_config())
+        template.has_resource_properties(
+            "AWS::DynamoDB::Table",
+            {
+                "TableName": "realtime-agentic-api-dev-connections",
+                "KeySchema": [
+                    {"AttributeName": "PK", "KeyType": "HASH"},
+                    {"AttributeName": "SK", "KeyType": "RANGE"},
+                ],
+            },
+        )
+
 
 class TestDatabaseStackGSIs:
     """Tests for Global Secondary Indexes."""

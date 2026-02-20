@@ -6,10 +6,6 @@ Each test runs with at least 100 randomized inputs.
 
 from __future__ import annotations
 
-import os
-import re
-import time
-
 import boto3
 import pytest
 from hypothesis import given, settings
@@ -28,14 +24,12 @@ from runtime.repositories.task_repository import TaskRepository
 
 _safe_text = st.text(
     alphabet=st.characters(
-        whitelist_categories=("L", "N", "P", "Z"),
-        blacklist_characters="\x00",
+        categories=("L", "N", "P", "Z"),
+        exclude_characters="\x00",
     ),
     min_size=1,
     max_size=100,
 )
-
-_uuid_text = st.from_regex(r"[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}", fullmatch=True)
 
 _user_id = _safe_text.filter(lambda s: s.strip() != "")
 _agent_name = _safe_text.filter(lambda s: s.strip() != "")
@@ -56,7 +50,7 @@ _agent_config = st.fixed_dictionaries(
 _task_description = st.text(
     min_size=1,
     max_size=500,
-    alphabet=st.characters(whitelist_categories=("L", "N", "P", "Z"), blacklist_characters="\x00"),
+    alphabet=st.characters(categories=("L", "N", "P", "Z"), exclude_characters="\x00"),
 )
 
 _message = st.fixed_dictionaries(

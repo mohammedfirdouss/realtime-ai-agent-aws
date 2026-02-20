@@ -17,6 +17,7 @@ from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
 
 _secret_cache: dict[str, str] = {}
+_secrets_clients: dict[str | None, Any] = {}
 
 
 def get_secret(secret_name: str, region: str | None = None) -> str:
@@ -35,7 +36,10 @@ def get_secret(secret_name: str, region: str | None = None) -> str:
     if secret_name in _secret_cache:
         return _secret_cache[secret_name]
 
-    client = boto3.client("secretsmanager", region_name=region)
+    client = _secrets_clients.get(region)
+    if client is None:
+        client = boto3.client("secretsmanager", region_name=region)
+        _secrets_clients[region] = client
     try:
         response = client.get_secret_value(SecretId=secret_name)
         value: str = response["SecretString"]
@@ -63,3 +67,4 @@ def get_secret_json(secret_name: str, region: str | None = None) -> dict[str, An
 def clear_cache() -> None:
     """Clear the in-memory secret cache (useful for testing)."""
     _secret_cache.clear()
+    _secrets_clients.clear()

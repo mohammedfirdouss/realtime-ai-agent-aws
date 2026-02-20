@@ -4,6 +4,7 @@
 import aws_cdk as cdk
 
 from infra.auth_stack import AuthStack
+from infra.cache_stack import CacheStack
 from infra.config import get_environment_config
 from infra.database_stack import DatabaseStack
 from infra.events_stack import EventsStack
@@ -26,6 +27,17 @@ foundation = FoundationStack(
     env=env,
     description=f"Realtime Agentic API foundation infrastructure ({config.stage})",
 )
+
+cache = CacheStack(
+    app,
+    f"RealtimeAgenticApi-Cache-{config.stage}",
+    config=config,
+    vpc=foundation.vpc,
+    cache_security_group=foundation.cache_sg,
+    env=env,
+    description=f"Realtime Agentic API cache resources ({config.stage})",
+)
+cache.add_dependency(foundation)
 
 database = DatabaseStack(
     app,

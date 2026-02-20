@@ -76,7 +76,7 @@ class TestEventPublisherAgentCreated:
         pub.publish_agent_created("a", "u", "n", metadata={"model": "gpt-4"})
 
         detail = json.loads(_last_put_entry(client)["Detail"])
-        assert detail["model"] == "gpt-4"
+        assert detail["metadata"] == {"model": "gpt-4"}
 
     def test_empty_agent_id_raises(self) -> None:
         pub = _publisher(_mock_client())

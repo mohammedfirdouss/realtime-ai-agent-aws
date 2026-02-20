@@ -1,4 +1,4 @@
-## Building a Realtime Agentic API with AWS CDK, AWS Lambda, AWS Stepfunctions, AWS EventBridge, Strands Agent
+## Building a Realtime Agentic API with AWS CDK, AWS Lambda, AWS Step Functions, AWS EventBridge, Strands Agent
 
 A serverless, event-driven platform for deploying and managing AI agents. Built with Python, AWS CDK, Lambda, Step Functions, EventBridge, and DynamoDB.
 
@@ -38,4 +38,3 @@ cdk deploy -c env=dev
 | dev         | 0           | 2   | Isolated subnets, secrets auto-deleted |
 | staging     | 1           | 2   | Private subnets with egress, VPC flow logs |
 | prod        | 2           | 3   | Full HA, secrets retained on delete |
-

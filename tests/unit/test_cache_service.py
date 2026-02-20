@@ -30,6 +30,16 @@ class TestLocalLRUCache:
         cache.set("key1", "value1", ttl=300)
         assert cache.get("key1") == "value1"
 
+    def test_ttl_expired_evicted(self) -> None:
+        cache = LocalLRUCache()
+        with patch("runtime.shared.cache_service.time.time") as mock_time:
+            mock_time.return_value = 1000.0
+            cache.set("key1", "value1", ttl=10)
+            assert cache.get("key1") == "value1"
+            mock_time.return_value = 1011.0
+            assert cache.get("key1") is None
+            assert cache.exists("key1") is False
+
     def test_delete_existing_key(self) -> None:
         cache = LocalLRUCache()
         cache.set("key1", "value1")
@@ -130,6 +140,14 @@ class TestCacheServiceLocalOnly:
         assert health["local_only_mode"] is True
         assert health["redis_status"] == "disconnected"
         assert "local_cache_size" in health
+
+    def test_invalidate_pattern_local_only(self) -> None:
+        service = CacheService(config=None)
+        service.set("agent:1", "value1")
+        service.set("agent:2", "value2")
+        deleted = service.invalidate_pattern("agent:*")
+        assert deleted == 2
+        assert service.get("agent:1") is None
 
 
 class TestCacheServiceCacheAside:
@@ -263,6 +281,25 @@ class TestCacheServiceWithMockedRedis:
             service.set("key1", "value1")
 
             mock_client.set.assert_called_once()
+
+    def test_invalidate_pattern_uses_scan(self) -> None:
+        mock_redis_module = MagicMock()
+        mock_client = MagicMock()
+        mock_client.scan.side_effect = [(1, ["a", "b"]), (0, ["c"])]
+        mock_client.delete.side_effect = [2, 1]
+        mock_redis_module.Redis.return_value = mock_client
+
+        with patch.dict("sys.modules", {"redis": mock_redis_module}):
+            config = CacheConfig(host="localhost", port=6379)
+            service = CacheService(config=config)
+            service._local_cache.set("a", 1)
+            service._local_cache.set("b", 2)
+            service._local_cache.set("c", 3)
+
+            deleted = service.invalidate_pattern("a*")
+
+        assert deleted == 3
+        assert service._local_cache.size() == 0
 
     def test_delete_from_redis(self) -> None:
         mock_redis_module = MagicMock()
