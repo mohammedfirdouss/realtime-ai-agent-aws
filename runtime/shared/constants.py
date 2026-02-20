@@ -120,3 +120,66 @@ MAX_SYSTEM_PROMPT_LENGTH = 10_000
 MAX_TOOLS_PER_AGENT = 50
 TEMPERATURE_MIN = 0.0
 TEMPERATURE_MAX = 2.0
+
+# ---------------------------------------------------------------------------
+# Authentication & Authorization
+# ---------------------------------------------------------------------------
+AUTH_HEADER_API_KEY = "x-api-key"
+AUTH_HEADER_AUTHORIZATION = "Authorization"
+AUTH_BEARER_PREFIX = "Bearer "
+
+# Roles
+ROLE_ADMIN = "admin"
+ROLE_USER = "user"
+ROLE_SERVICE = "service"
+
+VALID_ROLES = frozenset({ROLE_ADMIN, ROLE_USER, ROLE_SERVICE})
+
+# Permissions
+PERM_AGENT_CREATE = "agent:create"
+PERM_AGENT_READ = "agent:read"
+PERM_AGENT_UPDATE = "agent:update"
+PERM_AGENT_DELETE = "agent:delete"
+PERM_TASK_CREATE = "task:create"
+PERM_TASK_READ = "task:read"
+PERM_TASK_CANCEL = "task:cancel"
+PERM_ADMIN_ALL = "admin:*"
+
+VALID_PERMISSIONS = frozenset(
+    {
+        PERM_AGENT_CREATE,
+        PERM_AGENT_READ,
+        PERM_AGENT_UPDATE,
+        PERM_AGENT_DELETE,
+        PERM_TASK_CREATE,
+        PERM_TASK_READ,
+        PERM_TASK_CANCEL,
+        PERM_ADMIN_ALL,
+    }
+)
+
+# Default role-to-permission mapping
+ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
+    ROLE_ADMIN: VALID_PERMISSIONS,
+    ROLE_USER: frozenset(
+        {
+            PERM_AGENT_CREATE,
+            PERM_AGENT_READ,
+            PERM_AGENT_UPDATE,
+            PERM_AGENT_DELETE,
+            PERM_TASK_CREATE,
+            PERM_TASK_READ,
+            PERM_TASK_CANCEL,
+        }
+    ),
+    ROLE_SERVICE: frozenset(
+        {
+            PERM_AGENT_READ,
+            PERM_TASK_CREATE,
+            PERM_TASK_READ,
+        }
+    ),
+}
+
+# API Gateway authorizer cache TTL (seconds)
+AUTHORIZER_CACHE_TTL_SECONDS = 300  # 5 minutes
