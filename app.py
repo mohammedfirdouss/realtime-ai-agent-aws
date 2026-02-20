@@ -3,6 +3,7 @@
 
 import aws_cdk as cdk
 
+from infra.agent_management_stack import AgentManagementStack
 from infra.auth_stack import AuthStack
 from infra.cache_stack import CacheStack
 from infra.config import get_environment_config
@@ -65,5 +66,17 @@ auth = AuthStack(
     description=f"Realtime Agentic API authentication resources ({config.stage})",
 )
 auth.add_dependency(foundation)
+
+agent_management = AgentManagementStack(
+    app,
+    f"RealtimeAgenticApi-AgentManagement-{config.stage}",
+    config=config,
+    agents_table=database.agents_table,
+    event_bus=events.event_bus,
+    env=env,
+    description=f"Realtime Agentic API agent management ({config.stage})",
+)
+agent_management.add_dependency(database)
+agent_management.add_dependency(events)
 
 app.synth()
