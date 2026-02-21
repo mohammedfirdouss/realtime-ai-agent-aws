@@ -83,12 +83,13 @@ class AgentCapabilities:
         Uses the LLM to analyze the task and create a structured plan.
         """
         planning_prompt = (
-            f"Analyze the following task and create a step-by-step execution plan. "
-            f"Return a JSON array of steps, where each step has: "
-            f'"description" (what to do), "type" (one of: reasoning, tool_call, response, decision), '
-            f'and optionally "tool_name" and "tool_input" for tool_call steps.\n\n'
+            "Analyze the following task and create a step-by-step execution plan. "
+            "Return a JSON array of steps, where each step has: "
+            '"description" (what to do), '
+            '"type" (one of: reasoning, tool_call, response, decision), '
+            'and optionally "tool_name" and "tool_input" for tool_call steps.\n\n'
             f"Task: {description}\n\n"
-            f"Respond with ONLY a JSON array of steps, no other text."
+            "Respond with ONLY a JSON array of steps, no other text."
         )
 
         result = self._agent(planning_prompt)

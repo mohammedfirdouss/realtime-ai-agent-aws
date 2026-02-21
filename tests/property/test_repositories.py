@@ -37,7 +37,11 @@ _llm_provider = st.sampled_from(["openai", "anthropic"])
 _agent_config = st.fixed_dictionaries(
     {
         "llmProvider": _llm_provider,
-        "model": st.text(min_size=1, max_size=50, alphabet="abcdefghijklmnopqrstuvwxyz0123456789-_."),
+        "model": st.text(
+            min_size=1,
+            max_size=50,
+            alphabet="abcdefghijklmnopqrstuvwxyz0123456789-_.",
+        ),
         "tools": st.just([]),
     },
     optional={
@@ -305,7 +309,7 @@ class TestProperty64ConversationHistoryAppend:
             repo = _context_repo()
 
             agent_id = "agent-context-001"
-            ctx = repo.append_messages(agent_id, messages)
+            repo.append_messages(agent_id, messages)
 
             latest = repo.get_latest_context(agent_id)
             assert latest is not None

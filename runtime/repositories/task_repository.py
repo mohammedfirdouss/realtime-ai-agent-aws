@@ -50,7 +50,8 @@ class TaskRepository(BaseRepository):
         if user_id:
             item["userId"] = user_id
 
-        self.put_item(item, condition_expression="attribute_not_exists(PK) AND attribute_not_exists(SK)")
+        condition_expression = "attribute_not_exists(PK) AND attribute_not_exists(SK)"
+        self.put_item(item, condition_expression=condition_expression)
         return item
 
     # Read
