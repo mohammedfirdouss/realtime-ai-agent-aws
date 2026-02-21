@@ -3,7 +3,6 @@
 A serverless, event-driven platform for deploying and managing AI agents. Built with Python, AWS CDK, Lambda, Step Functions, EventBridge, and DynamoDB.
 
 ## Prerequisites
-
 - Python >= 3.11
 - AWS CLI (configured)
 - AWS CDK CLI (`npm install -g aws-cdk`)
