@@ -10,6 +10,7 @@ from infra.config import get_environment_config
 from infra.database_stack import DatabaseStack
 from infra.events_stack import EventsStack
 from infra.foundation_stack import FoundationStack
+from infra.task_processing_stack import TaskProcessingStack
 
 app = cdk.App()
 
@@ -78,5 +79,19 @@ agent_management = AgentManagementStack(
 )
 agent_management.add_dependency(database)
 agent_management.add_dependency(events)
+
+task_processing = TaskProcessingStack(
+    app,
+    f"RealtimeAgenticApi-TaskProcessing-{config.stage}",
+    config=config,
+    agents_table=database.agents_table,
+    tasks_table=database.tasks_table,
+    context_table=database.context_table,
+    event_bus=events.event_bus,
+    env=env,
+    description=f"Realtime Agentic API task processing ({config.stage})",
+)
+task_processing.add_dependency(database)
+task_processing.add_dependency(events)
 
 app.synth()

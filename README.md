@@ -76,29 +76,6 @@ cdk synth -c env=dev
 cdk deploy --all -c env=dev
 ```
 
-## Project Structure
-
-```
-app.py                  # CDK app entry point
-infra/                  # CDK stack definitions
-  config.py             # Environment configuration
-  foundation_stack.py   # VPC and networking
-  database_stack.py     # DynamoDB tables
-  cache_stack.py        # ElastiCache Redis
-  events_stack.py       # EventBridge
-  auth_stack.py         # Lambda authorizers
-  agent_management_stack.py  # Agent CRUD Lambda
-runtime/                # Lambda runtime code
-  handlers/             # Lambda entry points
-  repositories/         # DynamoDB data access
-  auth/                 # Authorizers and middleware
-  shared/               # Config, constants, LLM providers, caching
-tests/
-  unit/                 # Unit tests
-  property/             # Property-based tests (Hypothesis)
-specs/                  # Requirements and design docs
-```
-
 ## Environments
 
 | Environment | NAT Gateways | AZs | Notes |
